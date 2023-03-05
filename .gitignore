@@ -1,0 +1,98 @@
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+#*.lib
+#*.a
+*.la
+*.lo
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+*.VC.db
+*.suo
+*.ipch
+*.tlog
+*.log
+*.recipe
+*.lastbuildstate
+*.vcxproj.FileListAbsolute.txt
+*unsuccessfulbuild
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+Debug/
+cmake-build-debug/
+build/
+cmake-build-release/
+.cmake
+
+# Generated Files
+*.user
+*.gfx
+*.pkg
+*.node_c
+*.zip
+
+# Dev Content
+*.blend
+*.max
+*.map
+
+/build
+/.vs
+/out/build/x64-Debug (default)
+/out/build/x64-Debug
+/.idea
+/src/editor/Debug
+/src/editor/.vs/QEdit/v16
+/src/editor/x64/Debug
+/src/editor/enc_temp_folder
+
+# Release
+/release/user.node
+/release/runtime/**/*/*
+
+/CMakeSettings.json
+
+# PVS crap
+/.PVS-Studio
+*.PVS-Studio.cfg
+*.PVS-Studio.c
+*.PVS-Studio.i
+
+*.blend1
+*.aps
