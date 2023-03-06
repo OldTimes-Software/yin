@@ -4,115 +4,83 @@ Yin is primarily in C, with some external components in C++.
 These rules apply to everything except for any third-party
 libraries, which will of course have their own code style.
 
-## Function Name
+## Files
 
-All public functions should be prefixed with `OS`, for OldTimes Software, and then their respective library name, for instance, `OS_Game_`
+Each library should be broken between public and private,
+essentially meaning that there needs to be a public folder
+with headers that will provide the public API and a private
+folder with everything that's not intended to be part of
+any public API.
 
-Whenever public, these should be based upon the name of the project, folder and file. 
-For example, we have `flare.c` under a `renderer` directory of the engine...
+`gui/public/yin/gui.h`
 
-> OS_Engine_Renderer_CreateFlare
+If you have multiple public headers, do the following.
 
-Or alternatively, we have `sgui.c` under the `client` directory.
+`gui/public/yin/gui/gui_button.h`
 
-> OS_Engine_SGUI_
-
-In such a case that you have `client.c` under the `client` directory
-(i.e., the file name is the same as the folder name), then it's sufficient to do the following.
-
-> OS_Engine_Client_*
-
-If this subdirectory rule isn't available to you, ideally you should use
-the name of the library the function is attached to. 
-For example, a common library function in `common_pkg.c` could be the following.
+## Variables
 
 ```c
-void OS_Common_Pkg_Load( const char *path ) { [...] }
+int myVar = 0;
+bool myOtherVar = true; // we're not in the dark ages, use bool, true and false
+const char *yetAnotherVar = "Hello world!";
+
+// if they're not in scope of a function, use static!!
+static int myStaticVar = 0;
+
+// and global vars are highly discouraged, but if really *really* necessary...
+bool ynGuiWindowState = false;
+// (but obviously it's better to expose this as part of the API ... )
+bool YnGUI_Window_GetState( const YNGUIWindow *window ) { return window->state; }
 ```
 
-### Further Examples
-
-**Engine**
-```c
-void OS_Engine_Example_DoThing( void );
-```
-
-**Game**
-```c
-void OS_Game_Example_DoThing( void );
-```
-
-**GUI**
-```c
-void OS_GUI_Example_DoThing( void );
-```
-
-## Variable Names
+## Structs/Enums
 
 ```c
-unsigned int someVariableName = 0;
-float someOtherVariableName = 1.0f;
-```
+// use typedef ...
 
-## Structs
+// public struct
+typedef struct YNGUIInstance
+{
+    int blah;
+} YNGUIInstance;
 
-```c
-/*always typedef*/
+// public enum
+typedef enum YNGUIType
+{
+    YN_GUI_TYPE_NONE,
+    YN_GUI_TYPE_SOME,
+    YN_GUI_TYPE_DUMB,
+    
+    YN_GUI_MAX_TYPES
+} YNGUIType;
+
+// for private structs / enums ...
 typedef struct MyStruct
 {
-	float x;
-	float y;
-	float z;
-	int someVariable;
+    int blah;
 } MyStruct;
+// (prefix basically isn't necessary)
 ```
 
-When deciding on a name for the struct, try to scope it based on
-the file it's in. For example, `renderer/particle.c` would resolve
-to `OSGE_ParticleEmitter`/`ParticleMyThing`.
-
-## Example
+## Macros
 
 ```c
-// Both single line comments
-/* and multi line comments */
-// are accepted
+// example of a public macro
+#define YN_GUI_MAX_BUTTONS 8
+// example of a private macro
+#define MAX_BUTTONS 8
+```
 
-static int someVar = 0;
-int globalSomeVar = 0;  // Use globals sparingly
-int rendererVar = 0;    // or name after component...
+## Functions
 
-// If for example, under filesystem.c, function name prefix matches filename
-void FileSystem_DoAThing( int32_t myVar, uint32_t anotherVar )
+```c
+// public functions ...
+void YnCore_Material_DrawMesh( YNCoreMaterial *material, PLGMesh *mesh );
+
+// private functions ...
+static void DrawMesh( YNCoreMaterial *material, PLGMesh *mesh ) 
 {
-    printf( "Hello World!\n" );
-    if ( myVar >= 1 )
-        printf( "GREQ\n" );
-    else
-        printf( "LT\n" );
-	
-    if ( anotherVar >= 1 )
-    {
-        MyFunctionCall();
-        AnotherFunctionCall();
-    }
+    // ...
 }
-
-// We're using C11, so stdbool is assumed to be available
-#include <stdbool.h>
-static bool myBoolean;
-
-/**
- * Structs can be declared like so.
- * The key defining difference in naming
- * between a function and struct is the lack
- * of an underscore between the identifier
- * and the rest of the name.
- */
-typedef struct FileSystemSomeStruct
-{
-	int someVar;
-	unsigned int someOtherVar;
-} FileSystemSomeStruct;
-// If the struct is used for I/O operations, please use stdint sized types!
 ```
