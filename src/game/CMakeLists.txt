@@ -16,6 +16,7 @@ set(GAME_LINK_LIBS
         plgraphics
         plmodel
         yin-common
+        yin-core
         )
 set(GAME_INCLUDE_DIRS
         public/

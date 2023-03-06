@@ -6,23 +6,23 @@
 
 typedef struct GameComponentCamera
 {
-	YRCamera        *camera;
+	YNCoreCamera *camera;
 	bool             isActive;
-	EntityComponent *transform;
+	YNCoreEntityComponent *transform;
 } GameComponentCamera;
 #define GCCAMERA( SELF ) ENTITY_COMPONENT_CAST( ( SELF ), GameComponentCamera )
 
-ENTITY_COMPONENT_BEGIN_PROPERTIES()
-ENTITY_COMPONENT_PROPERTY( GameComponentCamera, isActive, "Indicates if the camera should be active or not.", CMN_DATATYPE_BOOL )
-ENTITY_COMPONENT_END_PROPERTIES()
+YN_CORE_ENTITY_COMPONENT_BEGIN_PROPERTIES()
+YN_CORE_ENTITY_COMPONENT_PROPERTY( GameComponentCamera, isActive, "Indicates if the camera should be active or not.", CMN_DATATYPE_BOOL )
+YN_CORE_ENTITY_COMPONENT_END_PROPERTIES()
 
-static void Spawn( EntityComponent *self )
+static void Spawn( YNCoreEntityComponent *self )
 {
 	self->userData = PL_NEW( GameComponentCamera );
 
 	const PLVector3 *position, *angles;
 
-	GCCAMERA( self )->transform = YinCore_Entity_GetComponentByName( self->entity, "transform" );
+	GCCAMERA( self )->transform = YnCore_Entity_GetComponentByName( self->entity, "transform" );
 	if ( GCCAMERA( self )->transform != NULL )
 	{
 		position = &ECTRANSFORM( GCCAMERA( self )->transform )->translation;
@@ -34,40 +34,40 @@ static void Spawn( EntityComponent *self )
 		angles   = &pl_vecOrigin3;
 	}
 
-	GCCAMERA( self )->camera = YR_Camera_Create( "dummy", position, angles );
+	GCCAMERA( self )->camera = YnCore_Camera_Create( "dummy", position, angles );
 }
 
-static void Destroy( EntityComponent *self )
+static void Destroy( YNCoreEntityComponent *self )
 {
-	YR_Camera_Destroy( GCCAMERA( self )->camera );
+	YnCore_Camera_Destroy( GCCAMERA( self )->camera );
 
 	PL_DELETE( GCCAMERA( self ) );
 }
 
-static void Tick( EntityComponent *self )
+static void Tick( YNCoreEntityComponent *self )
 {
 	// if there's no transform component, try checking again...
 	if ( GCCAMERA( self )->transform == NULL )
-		GCCAMERA( self )->transform = YinCore_Entity_GetComponentByName( self->entity, "transform" );
+		GCCAMERA( self )->transform = YnCore_Entity_GetComponentByName( self->entity, "transform" );
 	if ( GCCAMERA( self )->transform == NULL )
 		return;
 
-	YR_Camera_SetPosition( GCCAMERA( self )->camera, &ECTRANSFORM( GCCAMERA( self )->transform )->translation );
-	YR_Camera_SetAngles( GCCAMERA( self )->camera, &ECTRANSFORM( GCCAMERA( self )->transform )->angles );
+	YnCore_Camera_SetPosition( GCCAMERA( self )->camera, &ECTRANSFORM( GCCAMERA( self )->transform )->translation );
+	YnCore_Camera_SetAngles( GCCAMERA( self )->camera, &ECTRANSFORM( GCCAMERA( self )->transform )->angles );
 
 	if ( GCCAMERA( self )->isActive )
-		YR_MakeCameraActive( GCCAMERA( self )->camera );
+		YnCore_MakeCameraActive( GCCAMERA( self )->camera );
 }
 
-const EntityComponentCallbackTable *Game_Component_Camera_GetCallbackTable( void )
+const YNCoreEntityComponentCallbackTable *Game_Component_Camera_GetCallbackTable( void )
 {
-	static EntityComponentCallbackTable callbackTable;
+	static YNCoreEntityComponentCallbackTable callbackTable;
 	PL_ZERO_( callbackTable );
 	callbackTable.spawnFunction   = Spawn;
 	callbackTable.destroyFunction = Destroy;
 	callbackTable.tickFunction    = Tick;
 
-	ENTITY_HOOK_PROPERTIES( callbackTable );
+	YN_CORE_ENTITY_HOOK_PROPERTIES( callbackTable );
 
 	return &callbackTable;
 }

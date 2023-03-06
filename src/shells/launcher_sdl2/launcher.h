@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com> */
+// SPDX-License-Identifier: LGPL-3.0-or-later
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
@@ -9,7 +9,7 @@
 #include <plgraphics/plg.h>
 #include <plgraphics/plg_driver_interface.h>
 
-#include "engine_public_base.h"
+#include <yin/core_base.h>
 
 extern int launcherLog;
 
@@ -17,21 +17,21 @@ extern int launcherLog;
 #define PrintWarn( ... )                                         \
 	{                                                            \
 		PlLogMessage( launcherLog, __VA_ARGS__ );                \
-		OS_Shell_DisplayMessageBox( OS_MESSAGE_WARNING, __VA_ARGS__ ); \
+		YnCore_ShellInterface_DisplayMessageBox( YN_CORE_MESSAGE_WARNING, __VA_ARGS__ ); \
 	}
 
 #ifdef NDEBUG
 #	define PrintError( ... )                                      \
 		{                                                          \
 			PlLogMessage( launcherLog, __VA_ARGS__ );              \
-			OS_Shell_DisplayMessageBox( OS_MESSAGE_ERROR, __VA_ARGS__ ); \
+			YnCore_ShellInterface_DisplayMessageBox( OS_MESSAGE_ERROR, __VA_ARGS__ ); \
 			exit( EXIT_FAILURE );                                  \
 		}
 #else
 #	define PrintError( ... )                                      \
 		{                                                          \
 			PlLogMessage( launcherLog, __VA_ARGS__ );              \
-			OS_Shell_DisplayMessageBox( OS_MESSAGE_ERROR, __VA_ARGS__ ); \
+			YnCore_ShellInterface_DisplayMessageBox( YN_CORE_MESSAGE_ERROR, __VA_ARGS__ ); \
 			abort();                                               \
 		}
 #endif

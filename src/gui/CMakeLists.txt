@@ -25,4 +25,5 @@ set_target_properties(yin-gui PROPERTIES
 target_link_libraries(yin-gui
         plgraphics
         yin-common
+        yin-core
         )

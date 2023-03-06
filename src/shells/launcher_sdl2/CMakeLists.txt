@@ -13,7 +13,7 @@ add_dependencies(yin-shell_sdl2
 
         pl_gl_driver
 
-        yin-engine
+        yin-core
         )
 
 set_target_properties(yin-shell_sdl2 PROPERTIES
@@ -29,5 +29,5 @@ endif ()
 target_link_libraries(yin-shell_sdl2
         SDL2main
         SDL2
-        yin-engine
+        yin-core
         )

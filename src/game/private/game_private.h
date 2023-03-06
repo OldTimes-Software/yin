@@ -8,9 +8,9 @@
 #include <plcore/pl_linkedlist.h>
 #include <plcore/pl_hashtable.h>
 
-#include "engine/public/engine_public.h"
-#include "engine/public/engine_public_entity.h"
-#include "engine/public/engine_client_input.h"
+#include <yin/core.h>
+#include <yin/core_entity.h>
+#include <yin/core_input.h>
 
 #include "../../gui/public/gui_public.h"
 

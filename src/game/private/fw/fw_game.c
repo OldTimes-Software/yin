@@ -13,9 +13,9 @@ static void FW_Game_Initialize( void )
 	Game_RegisterStandardEntityComponents();
 
 	// Register our FW specific components
-	YinCore_EntityManager_RegisterComponent( "fw.character", NULL );
-	YinCore_EntityManager_RegisterComponent( "fw.projectile", NULL );
-	YinCore_EntityManager_RegisterComponent( "fw.weapon", NULL );
+	YnCore_EntityManager_RegisterComponent( "fw.character", NULL );
+	YnCore_EntityManager_RegisterComponent( "fw.projectile", NULL );
+	YnCore_EntityManager_RegisterComponent( "fw.weapon", NULL );
 
 	FW_Menu_Initialize();
 }
@@ -34,7 +34,7 @@ static void FW_Game_SaveGame( const char *path )
 	NLNode *root = NL_PushBackObj( NULL, "fwGameSave" );
 
 	// Save entity data
-	YinCore_EntityManager_Save( NL_PushBackObj( root, "entityData" ) );
+	YnCore_EntityManager_Save( NL_PushBackObj( root, "entityData" ) );
 
 	if ( !NL_WriteFile( path, root, NL_FILE_BINARY ) )
 	{
@@ -56,7 +56,7 @@ static void FW_Game_RestoreGame( const char *path )
 
 	NLNode *entityNode = NL_GetChildByName( root, "entityData" );
 	if ( entityNode != NULL )
-		YinCore_EntityManager_Restore( NULL );
+		YnCore_EntityManager_Restore( NULL );
 
 	NL_DestroyNode( entityNode );
 }
@@ -76,15 +76,15 @@ static void FW_Game_Draw( void )
 {
 }
 
-static void FW_Game_DrawMenu( const YRViewport *viewport )
+static void FW_Game_DrawMenu( const YNCoreViewport *viewport )
 {
 	FW_Menu_Draw( viewport );
 }
 
-static void SpawnWorld( World *world )
+static void SpawnWorld( YNCoreWorld *world )
 {
 	NLNode *propertyNode;
-	if ( ( propertyNode = World_GetProperty( world, "heightmap" ) ) != NULL )
+	if ( ( propertyNode = YnCore_World_GetProperty( world, "heightmap" ) ) != NULL )
 	{
 		PLPath path;
 		if ( NL_GetStr( propertyNode, path, sizeof( path ) ) == NL_ERROR_SUCCESS )
@@ -92,12 +92,12 @@ static void SpawnWorld( World *world )
 
 		}
 		else
-			Game_Warning( "Invalid heightmap property encountered for world (%s)!\n", World_GetPath( world ) );
+			Game_Warning( "Invalid heightmap property encountered for world (%s)!\n", YnCore_World_GetPath( world ) );
 	}
 	else
-		Game_Warning( "No heightmap provided for world (%s)!\n", World_GetPath( world ) );
+		Game_Warning( "No heightmap provided for world (%s)!\n", YnCore_World_GetPath( world ) );
 
-	if ( ( propertyNode = World_GetProperty( world, "waterLevel" ) ) != NULL )
+	if ( ( propertyNode = YnCore_World_GetProperty( world, "waterLevel" ) ) != NULL )
 		NL_GetF32( propertyNode, &fwGameState.simState.waterHeight );
 }
 
@@ -111,7 +111,7 @@ static bool FW_Game_RequestHandler( GameModeRequest gameModeRequest, void *user 
 		case GAMEMODE_REQUEST_HANDLEINPUT:
 			break;
 		case GAMEMODE_REQUEST_SPAWNWORLD:
-			SpawnWorld( ( World * ) user );
+			SpawnWorld( ( YNCoreWorld * ) user );
 			break;
 		default:
 			break;

@@ -14,7 +14,7 @@ extern "C"
 	}
 
 	void OS_Shell_GetWindowSize( int *width, int *height ) {}
-	void OS_Shell_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
+	void YnCore_ShellInterface_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
 	{
 	}
 

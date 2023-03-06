@@ -8,7 +8,7 @@ static Menu mainMenu;
 
 static void QuitOption( void )
 {
-	Engine_Shutdown();
+	YnCore_Shutdown();
 }
 
 static MenuOption quitMenuOptions[] = {
@@ -41,21 +41,21 @@ typedef enum FWPieMenuIcon
 
 	FW_MAX_PIEMENU_ICONS
 } FWPieMenuIcon;
-static Material *pieIcons[ FW_MAX_PIEMENU_ICONS ];
+static YNCoreMaterial *pieIcons[ FW_MAX_PIEMENU_ICONS ];
 
 void FW_Menu_Initialize( void )
 {
 	// mmm delicious pie
 	interactPie = FW_Menu_CreatePie();
-	FW_Menu_AddPieOption( interactPie, "testing 1", YinCore_Material_Cache( "materials/ui/pie/cursor.mat.n", CACHE_GROUP_WORLD, true, false ), NULL );
-	FW_Menu_AddPieOption( interactPie, "testing 2", YinCore_Material_Cache( "materials/ui/pie/icon_mouth.mat.n", CACHE_GROUP_WORLD, true, false ), NULL );
-	FW_Menu_AddPieOption( interactPie, "testing 3", YinCore_Material_Cache( "materials/ui/pie/icon_tape.mat.n", CACHE_GROUP_WORLD, true, false ), NULL );
+	FW_Menu_AddPieOption( interactPie, "testing 1", YnCore_Material_Cache( "materials/ui/pie/cursor.mat.n", YN_CORE_CACHE_GROUP_WORLD, true, false ), NULL );
+	FW_Menu_AddPieOption( interactPie, "testing 2", YnCore_Material_Cache( "materials/ui/pie/icon_mouth.mat.n", YN_CORE_CACHE_GROUP_WORLD, true, false ), NULL );
+	FW_Menu_AddPieOption( interactPie, "testing 3", YnCore_Material_Cache( "materials/ui/pie/icon_tape.mat.n", YN_CORE_CACHE_GROUP_WORLD, true, false ), NULL );
 	//FW_Menu_SetPieActive( interactPie, true );
 
 	Game_Menu_SetCurrent( &mainMenu );
 }
 
-static void DrawHUD( const YRViewport *viewport )
+static void DrawHUD( const YNCoreViewport *viewport )
 {
 }
 
@@ -64,11 +64,11 @@ void FW_Menu_Tick( void )
 	FW_Menu_TickPie( interactPie );
 }
 
-void FW_Menu_Draw( const YRViewport *viewport )
+void FW_Menu_Draw( const YNCoreViewport *viewport )
 {
 	// get the centre of the screen
 	int w, h;
-	YinCore_Viewport_GetSize( viewport, &w, &h );
+	YnCore_Viewport_GetSize( viewport, &w, &h );
 	int cx = w / 2;
 	int cy = h / 2;
 
@@ -88,15 +88,15 @@ void FW_Menu_Draw( const YRViewport *viewport )
 bool FW_Menu_HandleInput( void )
 {
 	static bool blah = true;
-	if ( YinCore_Input_GetButtonStatus( 0, INPUT_START ) == INPUT_STATE_PRESSED )
+	if ( YnCore_Input_GetButtonStatus( 0, INPUT_START ) == YN_CORE_INPUT_STATE_PRESSED )
 	{
 		blah = !blah;
 		FW_Menu_SetPieActive( interactPie, blah );
 		return true;
 	}
-	if ( YinCore_Input_GetButtonStatus( 0, INPUT_X ) == INPUT_STATE_PRESSED )
+	if ( YnCore_Input_GetButtonStatus( 0, INPUT_X ) == YN_CORE_INPUT_STATE_PRESSED )
 	{
-		FW_Menu_AddPieOption( interactPie, "testing 4", YinCore_Material_Cache( "materials/ui/pie/cursor.mat.n", CACHE_GROUP_WORLD, true, false ), NULL );
+		FW_Menu_AddPieOption( interactPie, "testing 4", YnCore_Material_Cache( "materials/ui/pie/cursor.mat.n", YN_CORE_CACHE_GROUP_WORLD, true, false ), NULL );
 		return true;
 	}
 

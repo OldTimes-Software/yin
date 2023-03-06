@@ -32,8 +32,6 @@ typedef unsigned int   uint;
 typedef unsigned short ushort;
 typedef unsigned char  uchar;
 
-#include "engine/public/engine_public.h"
-
 #if defined( COMMON_DLL )
 #	include "kernel/plcore/include/plcore/pl_console.h"
 

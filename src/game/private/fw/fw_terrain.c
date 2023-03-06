@@ -20,7 +20,7 @@ static unsigned char terrainMinHeight, terrainMaxHeight;
 #define TERRAIN_MESH_VERTS_Y   32
 #define TERRAIN_MESH_NUM_VERTS ( TERRAIN_MESH_VERTS_X * TERRAIN_MESH_VERTS_Y )
 
-static Material *terrainMaterial = NULL;
+static YNCoreMaterial *terrainMaterial = NULL;
 static PLGMesh *terrainMesh      = NULL;
 static PLGVertex vertices[ TERRAIN_MESH_NUM_VERTS ];
 
@@ -47,7 +47,7 @@ void FW_Terrain_Shutdown( void )
 {
 	PlgDestroyMesh( terrainMesh );
 
-	YinCore_Material_Release( terrainMaterial );
+	YnCore_Material_Release( terrainMaterial );
 }
 
 /****************************************/

@@ -137,7 +137,7 @@ static void PackImage_WriteCluster( FILE *filePtr, const PLImage *image )
 			break;
 	}
 
-	uint8_t numChannels = PackImage_GetNumChannels( channels );
+	uint8_t numChannels = GetNumChannels( channels );
 
 	Print( "Checking number of unique pixels in \"%s\"...\n", image->path );
 

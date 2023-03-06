@@ -120,8 +120,8 @@ build_openal()
 
 add_subdirectory(src/common/)
 
+add_subdirectory(src/core/)
 add_subdirectory(src/node/)
-add_subdirectory(src/engine/)
 add_subdirectory(src/game/)
 add_subdirectory(src/gui/)
 

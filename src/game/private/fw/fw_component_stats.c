@@ -3,13 +3,13 @@
 
 #include "fw_component_stats.h"
 
-static void FW_Component_Stats_Spawn( EntityComponent *self )
+static void FW_Component_Stats_Spawn( YNCoreEntityComponent *self )
 {
 }
 
-const EntityComponentCallbackTable *FW_Component_Stats_GetCallbackTable( void )
+const YNCoreEntityComponentCallbackTable *FW_Component_Stats_GetCallbackTable( void )
 {
-	static EntityComponentCallbackTable callbackTable;
+	static YNCoreEntityComponentCallbackTable callbackTable;
 	PL_ZERO_( callbackTable );
 	callbackTable.spawnFunction = FW_Component_Stats_Spawn;
 

@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <SDL2/SDL.h>
@@ -6,48 +7,46 @@
 #	include <crtdbg.h>
 #endif
 
-#include "engine_public.h"
+#include <yin/core.h>
+#include <yin/core_renderer.h>
 
 #include "common.h"
 #include "node.h"
 #include "launcher.h"
-#include "engine_public_renderer.h"
 
 static NLNode *shellConfig;
+
+void YnCore_ShellInterface_PushMessage( int level, const char *msg, const PLColour *colour )
+{
+}
 
 /****************************************
  * WINDOW MANAGEMENT
  ****************************************/
 
-static SDL_Window   *sdlWindow    = NULL;
+static SDL_Window *sdlWindow      = NULL;
 static SDL_GLContext sdlGLContext = NULL;
 
-static YRViewport *windowViewport = NULL;
+static YNCoreViewport *windowViewport = NULL;
 
 static int drawW, drawH;
 
-void OS_SetWindowTitle( const char *title )
+void YnCore_ShellInterface_DisplayMessageBox( YNCoreMessageType messageType, const char *message, ... )
 {
-	assert( sdlWindow != NULL );
-	SDL_SetWindowTitle( sdlWindow, title );
-}
-
-void OS_Shell_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
-{
-	const char         *title;
+	const char *title;
 	SDL_MessageBoxFlags flags;
 	switch ( messageType )
 	{
-		case OS_MESSAGE_ERROR:
+		case YN_CORE_MESSAGE_ERROR:
 			title = "Error";
 			flags = SDL_MESSAGEBOX_ERROR;
 			break;
-		case OS_MESSAGE_WARNING:
+		case YN_CORE_MESSAGE_WARNING:
 			title = "Warning";
 			flags = SDL_MESSAGEBOX_WARNING;
 			break;
 		default:
-		case OS_MESSAGE_INFO:
+		case YN_CORE_MESSAGE_INFO:
 			title = "Info";
 			flags = SDL_MESSAGEBOX_INFORMATION;
 			break;
@@ -56,7 +55,7 @@ void OS_Shell_DisplayMessageBox( OSMessageType messageType, const char *message,
 	va_list args;
 	va_start( args, message );
 
-	int   l   = pl_vscprintf( message, args );
+	int l     = pl_vscprintf( message, args );
 	char *buf = PlMAllocA( l + 1 );
 
 	vsnprintf( buf, l, message, args );
@@ -70,14 +69,14 @@ void OS_Shell_DisplayMessageBox( OSMessageType messageType, const char *message,
 	PL_DELETE( buf );
 }
 
-bool OS_IsWindowActive( void )
+static bool IsWindowActive( void )
 {
 	assert( sdlWindow != NULL );
 	uint32_t flags = SDL_GetWindowFlags( sdlWindow );
 	return ( !( flags & SDL_WINDOW_HIDDEN ) && ( flags & SDL_WINDOW_INPUT_FOCUS ) );
 }
 
-YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
+YNCoreViewport *YnCore_ShellInterface_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
 {
 	int flags = 0;
 #if !NDEBUG
@@ -91,7 +90,7 @@ YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, boo
 		default:
 			PrintWarn( "Unknown graphics mode (%d)!\n", mode );
 			break;
-		case OS_GRAPHICS_OPENGL:
+		case YN_CORE_GRAPHICS_OPENGL:
 			flags |= SDL_WINDOW_OPENGL;
 			SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
 			SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
@@ -102,7 +101,7 @@ YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, boo
 			SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 3 );
 			SDL_GL_SetAttribute( SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1 );
 			break;
-		case OS_GRAPHICS_VULKAN:
+		case YN_CORE_GRAPHICS_VULKAN:
 			flags |= SDL_WINDOW_VULKAN;
 			break;
 	}
@@ -129,7 +128,7 @@ YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, boo
 #	endif
 #endif
 
-	if ( mode == OS_GRAPHICS_OPENGL )
+	if ( mode == YN_CORE_GRAPHICS_OPENGL )
 	{
 		sdlGLContext = SDL_GL_CreateContext( sdlWindow );
 		if ( sdlGLContext == NULL )
@@ -143,10 +142,10 @@ YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, boo
 		SDL_GL_GetDrawableSize( sdlWindow, &drawW, &drawH );
 	}
 
-	return YinCore_Viewport_Create( 0, 0, width, height, sdlWindow );
+	return YnCore_Viewport_Create( 0, 0, width, height, sdlWindow );
 }
 
-void OS_DestroyWindow( void )
+static void DestroyWindow( void )
 {
 	if ( sdlGLContext != NULL )
 		SDL_GL_DeleteContext( sdlGLContext );
@@ -155,7 +154,7 @@ void OS_DestroyWindow( void )
 		SDL_DestroyWindow( sdlWindow );
 }
 
-bool OS_SetWindowSize( int *width, int *height )
+bool YnCore_ShellInterface_SetWindowSize( int *width, int *height )
 {
 	if ( sdlWindow == NULL )
 	{
@@ -177,7 +176,7 @@ bool OS_SetWindowSize( int *width, int *height )
 	return false;
 }
 
-void OS_Shell_GetWindowSize( int *width, int *height )
+void YnCore_ShellInterface_GetWindowSize( int *width, int *height )
 {
 	SDL_GetWindowSize( sdlWindow, width, height );
 }
@@ -186,47 +185,42 @@ void OS_Shell_GetWindowSize( int *width, int *height )
  * INPUT MANAGEMENT
  ****************************************/
 
-static OSInputState buttonStates[ MAX_BUTTON_INPUTS ];
-OSInputState OS_Shell_GetButtonState( ClientInputButton inputButton )
+static YNCoreInputState buttonStates[ YN_CORE_MAX_BUTTON_INPUTS ];
+YNCoreInputState YnCore_ShellInterface_GetButtonState( YNCoreInputButton inputButton )
 {
-	if ( inputButton >= MAX_BUTTON_INPUTS )
-		return INPUT_STATE_NONE;
+	if ( inputButton >= YN_CORE_MAX_BUTTON_INPUTS )
+		return YN_CORE_INPUT_STATE_NONE;
 
 	return buttonStates[ inputButton ];
 }
 
-static OSInputState keyStates[ MAX_KEY_INPUTS ];
-OSInputState OS_Shell_GetKeyState( int key )
+static YNCoreInputState keyStates[ YN_CORE_MAX_KEY_INPUTS ];
+YNCoreInputState YnCore_ShellInterface_GetKeyState( int key )
 {
-	if ( key >= MAX_KEY_INPUTS )
-		return INPUT_STATE_NONE;
+	if ( key >= YN_CORE_MAX_KEY_INPUTS )
+		return YN_CORE_INPUT_STATE_NONE;
 
 	return keyStates[ key ];
 }
 
-void OS_Shell_GetMousePosition( int *x, int *y )
+void YnCore_ShellInterface_GetMousePosition( int *x, int *y )
 {
 	SDL_GetMouseState( x, y );
 }
 
-void OS_Shell_SetMousePosition( int x, int y )
+void YnCore_ShellInterface_SetMousePosition( int x, int y )
 {
 	SDL_WarpMouseInWindow( sdlWindow, x, y );
 }
 
 static bool grabState = false;
 
-void OS_Shell_GrabMouse( bool grab )
+void YnCore_ShellInterface_GrabMouse( bool grab )
 {
 	SDL_SetWindowGrab( sdlWindow, grab );
 	SDL_SetRelativeMouseMode( grab );
 
 	SDL_ShowCursor( !grab );
-}
-
-bool OS_GetGrabState( void )
-{
-	return SDL_GetWindowGrab( sdlWindow );
 }
 
 static int Sys_TranslateSDLKeyInput( int key )
@@ -310,7 +304,7 @@ static int Sys_TranslateSDLKeyInput( int key )
 
 			/* temp temp temp */
 		case SDLK_ESCAPE:
-			Engine_Shutdown();
+			YnCore_Shutdown();
 			break;
 	}
 
@@ -321,7 +315,7 @@ static int Sys_TranslateSDLKeyInput( int key )
  * TIMER MANAGEMENT
  ****************************************/
 
-static SDL_TimerID  sdlTimer = 0;
+static SDL_TimerID sdlTimer = 0;
 static unsigned int OS_TimerCallback( unsigned int interval, void *param )
 {
 #if 1
@@ -345,19 +339,15 @@ static unsigned int OS_TimerCallback( unsigned int interval, void *param )
  * INITIALIZATION
  ****************************************/
 
-void OS_Shell_Shutdown( void )
+void YnCore_ShellInterface_Shutdown( void )
 {
 	Common_WriteConfig( shellConfig, "shell" );
 
 	if ( sdlTimer != 0 )
-	{
 		SDL_RemoveTimer( sdlTimer );
-	}
 
 	exit( EXIT_SUCCESS );
 }
-
-const char *OS_GetError( void ) { return SDL_GetError(); }
 
 int launcherLog;
 
@@ -369,8 +359,8 @@ static bool InitializeDisplay( void )
 	PLPath exePath;
 	if ( PlGetExecutableDirectory( exePath, sizeof( exePath ) ) != NULL )
 	{
-		size_t size       = strlen( exePath ) + PL_SYSTEM_MAX_PATH + 1;
-		char  *driverPath = PL_NEW_( char, size );
+		size_t size      = strlen( exePath ) + PL_SYSTEM_MAX_PATH + 1;
+		char *driverPath = PL_NEW_( char, size );
 		snprintf( driverPath, size, "local://%s", exePath );
 		PlgScanForDrivers( driverPath );
 		PL_DELETE( driverPath );
@@ -382,27 +372,19 @@ static bool InitializeDisplay( void )
 	}
 
 	unsigned int driverMode;
-	const char  *driverName = NL_GetStrByName( shellConfig, "shell.driver", "opengl" );
+	const char *driverName = NL_GetStrByName( shellConfig, "shell.driver", "opengl" );
 	if ( strcmp( driverName, "opengl" ) == 0 )
-	{
-		driverMode = OS_GRAPHICS_OPENGL;
-	}
+		driverMode = YN_CORE_GRAPHICS_OPENGL;
 	else if ( strcmp( driverName, "vulkan" ) == 0 )
-	{
-		driverMode = OS_GRAPHICS_VULKAN;
-	}
+		driverMode = YN_CORE_GRAPHICS_VULKAN;
 	else if ( strcmp( driverName, "software" ) == 0 )
-	{
-		driverMode = OS_GRAPHICS_SOFTWARE;
-	}
+		driverMode = YN_CORE_GRAPHICS_SOFTWARE;
 	else
-	{
-		driverMode = OS_GRAPHICS_OTHER;
-	}
+		driverMode = YN_CORE_GRAPHICS_OTHER;
 
-	if ( ( windowViewport = OS_Shell_CreateWindow( "Yin Game Engine", 1024, 768, false, driverMode ) ) == NULL )
+	if ( ( windowViewport = YnCore_ShellInterface_CreateWindow( "Yin Game Engine", 1024, 768, false, driverMode ) ) == NULL )
 	{
-		OS_Shell_DisplayMessageBox( OS_MESSAGE_ERROR, "Failed to create window!\n" );
+		YnCore_ShellInterface_DisplayMessageBox( YN_CORE_MESSAGE_ERROR, "Failed to create window!\n" );
 		return EXIT_FAILURE;
 	}
 
@@ -477,17 +459,17 @@ int Launcher_Initialize( int argc, char **argv )
 		PrintError( "Failed to initialize display!\nCheck debug logs.\n" );
 	}
 
-	if ( !Engine_Initialize( NULL ) )
+	if ( !YnCore_Initialize( NULL ) )
 	{
 		PrintError( "Failed to initialize engine!\nCheck debug logs.\n" );
 	}
 
 	// setup our timers, in this case we're just setting up our tick
-	sdlTimer = SDL_AddTimer( TICK_RATE, OS_TimerCallback, NULL );
+	sdlTimer = SDL_AddTimer( YN_CORE_TICK_RATE, OS_TimerCallback, NULL );
 
 	SDL_StartTextInput();
 
-	while ( YinCore_IsEngineRunning() )
+	while ( YnCore_IsEngineRunning() )
 	{
 		SDL_Event event;
 		while ( SDL_PollEvent( &event ) )
@@ -495,11 +477,11 @@ int Launcher_Initialize( int argc, char **argv )
 			switch ( event.type )
 			{
 				case SDL_USEREVENT:
-					Engine_TickFrame();
+					YnCore_TickFrame();
 					break;
 
 				case SDL_TEXTINPUT:
-					Engine_HandleTextEvent( event.text.text );
+					YnCore_HandleTextEvent( event.text.text );
 					break;
 
 				case SDL_MOUSEWHEEL:
@@ -508,15 +490,15 @@ int Launcher_Initialize( int argc, char **argv )
 					                                                               : 0.0f;
 					float y = ( event.wheel.y > 0 ) ? 1.0f : ( event.wheel.y < 0 ) ? -1.0f
 					                                                               : 0.0f;
-					Engine_HandleMouseWheelEvent( x, y );
+					YnCore_HandleMouseWheelEvent( x, y );
 					break;
 				}
 				case SDL_MOUSEBUTTONDOWN:
 				case SDL_MOUSEBUTTONUP:
-					Engine_HandleMouseButtonEvent( event.button.button, ( event.button.type == SDL_MOUSEBUTTONDOWN ) );
+					YnCore_HandleMouseButtonEvent( event.button.button, ( event.button.type == SDL_MOUSEBUTTONDOWN ) );
 					break;
 				case SDL_MOUSEMOTION:
-					YinCore_HandleMouseMotionEvent( event.motion.x, event.motion.y );
+					YnCore_HandleMouseMotionEvent( event.motion.x, event.motion.y );
 					break;
 
 				case SDL_KEYDOWN:
@@ -529,9 +511,9 @@ int Launcher_Initialize( int argc, char **argv )
 						break;
 					}
 
-					keyStates[ key ] = ( event.type == SDL_KEYDOWN ) ? INPUT_STATE_DOWN : INPUT_STATE_NONE;
+					keyStates[ key ] = ( event.type == SDL_KEYDOWN ) ? YN_CORE_INPUT_STATE_DOWN : YN_CORE_INPUT_STATE_NONE;
 
-					Engine_HandleKeyboardEvent( key, keyStates[ key ] );
+					YnCore_HandleKeyboardEvent( key, keyStates[ key ] );
 					break;
 				}
 
@@ -547,7 +529,7 @@ int Launcher_Initialize( int argc, char **argv )
 							//SDL_GL_GetDrawableSize( sdlWindow, &drawW, &drawW );
 							// originally used the above but it kept returning bogus coords...
 							SDL_GetWindowSize( sdlWindow, &drawW, &drawH );
-							YinCore_Viewport_SetSize( windowViewport, drawW, drawH );
+							YnCore_Viewport_SetSize( windowViewport, drawW, drawH );
 							break;
 					}
 					break;
@@ -555,14 +537,14 @@ int Launcher_Initialize( int argc, char **argv )
 			}
 		}
 
-		YinCore_RenderFrame( windowViewport );
+		YnCore_RenderFrame( windowViewport );
 
 		SDL_GL_SwapWindow( sdlWindow );
 	}
 
 	SDL_StopTextInput();
 
-	Engine_Shutdown();
+	YnCore_Shutdown();
 
 	return EXIT_SUCCESS;
 }

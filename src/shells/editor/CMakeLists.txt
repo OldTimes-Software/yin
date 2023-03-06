@@ -17,7 +17,7 @@ add_dependencies(yin-editor
         plgraphics
         plmodel
         pl_gl_driver
-        yin-engine
+        yin-core
         FOX-1.6)
 
 set_target_properties(yin-editor PROPERTIES
@@ -35,6 +35,6 @@ else ()
 endif ()
 
 target_link_libraries(yin-editor
-        yin-engine
+        yin-core
         FOX-1.6
         git2)

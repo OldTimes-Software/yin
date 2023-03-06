@@ -4,6 +4,7 @@
 #pragma once
 
 #include <plcore/pl_filesystem.h>
+#include <plcore/pl_math.h>
 
 #include "common.h"
 

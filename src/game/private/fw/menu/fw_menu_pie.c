@@ -23,7 +23,7 @@ typedef struct FWPieMenuOption
 {
 	PLLinkedListNode *node;
 	char label[ 64 ];
-	struct Material *icon;
+	struct YNCoreMaterial *icon;
 	FWPieMenuOptionCallback callback;
 	FWPieMenu *parent;
 } FWPieMenuOption;
@@ -116,10 +116,10 @@ bool FW_Menu_HandlePieInput( FWPieMenu *menu )
 	else
 #endif
 
-	PLVector2 joyPos = YinCore_Input_GetStickStatus( 0, 0 );
+	PLVector2 joyPos = YnCore_Input_GetStickStatus( 0, 0 );
 	menu->cursor     = joyPos;
 
-	if ( YinCore_Input_GetButtonStatus( 0, INPUT_A ) == INPUT_STATE_PRESSED )
+	if ( YnCore_Input_GetButtonStatus( 0, INPUT_A ) == YN_CORE_INPUT_STATE_PRESSED )
 	{
 		Game_Debug( "Selected item...\n" );
 
@@ -141,12 +141,12 @@ bool FW_Menu_HandlePieInput( FWPieMenu *menu )
 		return true;
 	}
 
-	if ( YinCore_Input_GetButtonStatus( 0, INPUT_RB ) != INPUT_STATE_NONE )
+	if ( YnCore_Input_GetButtonStatus( 0, INPUT_RB ) != YN_CORE_INPUT_STATE_NONE )
 	{
 		menu->velocity -= 1.5f;
 		return true;
 	}
-	else if ( YinCore_Input_GetButtonStatus( 0, INPUT_LB ) != INPUT_STATE_NONE )
+	else if ( YnCore_Input_GetButtonStatus( 0, INPUT_LB ) != YN_CORE_INPUT_STATE_NONE )
 	{
 		menu->velocity += 1.5f;
 		return true;
@@ -189,7 +189,7 @@ static void DrawPieOption( FWPieMenuOption *option, float x, float y, bool isSel
 		return;
 	}
 
-	YinCore_Material_DrawMesh( option->icon, mesh, NULL, 0 );
+	YnCore_Material_DrawMesh( option->icon, mesh, NULL, 0 );
 }
 
 static FWPieMenuOption *GetSelectedOption( FWPieMenu *menu )
@@ -250,7 +250,7 @@ void FW_Menu_SetPieActive( FWPieMenu *menu, bool active )
 	menu->scale    = 0.0f;
 }
 
-FWPieMenuOption *FW_Menu_AddPieOption( FWPieMenu *menu, const char *label, struct Material *icon, FWPieMenuOptionCallback callback )
+FWPieMenuOption *FW_Menu_AddPieOption( FWPieMenu *menu, const char *label, struct YNCoreMaterial *icon, FWPieMenuOptionCallback callback )
 {
 	FWPieMenuOption *option = PL_NEW( FWPieMenuOption );
 	option->node            = PlInsertLinkedListNode( menu->options, option );
@@ -289,7 +289,7 @@ void FW_Menu_DestroyPieOption( FWPieMenuOption *option )
 		Game_Warning( "Encountered a pie option with no parent!\n" );
 
 	if ( option->icon != NULL )
-		YinCore_Material_Release( option->icon );
+		YnCore_Material_Release( option->icon );
 
 	PL_DELETE( option );
 }

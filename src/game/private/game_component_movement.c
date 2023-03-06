@@ -10,23 +10,23 @@ static void HandleMouseLook( GameMovementComponent *movementComponent )
 		return;
 
 	int mx, my;
-	OS_Shell_GetMousePosition( &mx, &my );//TODO: should use Client_Input_GetMouseDelta ...
+	YnCore_ShellInterface_GetMousePosition( &mx, &my );//TODO: should use Client_Input_GetMouseDelta ...
 
 	//TODO
 }
 
-static void Tick( EntityComponent *self )
+static void Tick( YNCoreEntityComponent *self )
 {
-	if ( OS_Shell_GetButtonState( INPUT_A ) )
+	if ( YnCore_ShellInterface_GetButtonState( INPUT_A ) )
 		GAME_MOVEMENT_COMPONENT( self )->velocity.y += 10.0f;
 
 	HandleMouseLook( GAME_MOVEMENT_COMPONENT( self ) );
 
 	static const float gain = 0.25f;
 
-	if ( OS_Shell_GetButtonState( INPUT_UP ) || OS_Shell_GetKeyState( 'w' ) )
+	if ( YnCore_ShellInterface_GetButtonState( YN_CORE_INPUT_UP ) || YnCore_ShellInterface_GetKeyState( 'w' ) )
 		GAME_MOVEMENT_COMPONENT( self )->forwardVelocity += gain;
-	else if ( OS_Shell_GetButtonState( INPUT_DOWN ) || OS_Shell_GetKeyState( 's' ) )
+	else if ( YnCore_ShellInterface_GetButtonState( YN_CORE_INPUT_DOWN ) || YnCore_ShellInterface_GetKeyState( 's' ) )
 		GAME_MOVEMENT_COMPONENT( self )->forwardVelocity -= gain;
 	else if ( GAME_MOVEMENT_COMPONENT( self )->forwardVelocity != 0.0f )
 	{
@@ -36,9 +36,9 @@ static void Tick( EntityComponent *self )
 	}
 
 	// strafing
-	if ( OS_Shell_GetKeyState( 'a' ) )
+	if ( YnCore_ShellInterface_GetKeyState( 'a' ) )
 		GAME_MOVEMENT_COMPONENT( self )->strafeVelocity += gain;
-	else if ( OS_Shell_GetKeyState( 'd' ) )
+	else if ( YnCore_ShellInterface_GetKeyState( 'd' ) )
 		GAME_MOVEMENT_COMPONENT( self )->strafeVelocity -= gain;
 	else if ( GAME_MOVEMENT_COMPONENT( self )->strafeVelocity != 0.0f )
 	{
@@ -48,7 +48,7 @@ static void Tick( EntityComponent *self )
 	}
 
 	// clamp the velocity as necessary
-	float maxVelocity = OS_Shell_GetButtonState( INPUT_LEFT_STICK ) || OS_Shell_GetKeyState( KEY_LEFT_SHIFT ) ? GAME_MOVEMENT_COMPONENT( self )->maxRunSpeed : GAME_MOVEMENT_COMPONENT( self )->maxWalkSpeed;
+	float maxVelocity = YnCore_ShellInterface_GetButtonState( INPUT_LEFT_STICK ) || YnCore_ShellInterface_GetKeyState( KEY_LEFT_SHIFT ) ? GAME_MOVEMENT_COMPONENT( self )->maxRunSpeed : GAME_MOVEMENT_COMPONENT( self )->maxWalkSpeed;
 	GAME_MOVEMENT_COMPONENT( self )->forwardVelocity = PlClamp( -maxVelocity, GAME_MOVEMENT_COMPONENT( self )->forwardVelocity, maxVelocity );
 	GAME_MOVEMENT_COMPONENT( self )->strafeVelocity = PlClamp( -maxVelocity, GAME_MOVEMENT_COMPONENT( self )->strafeVelocity, maxVelocity );
 
@@ -62,9 +62,9 @@ static void Tick( EntityComponent *self )
 #endif
 }
 
-const EntityComponentCallbackTable *Game_Component_Movement_GetCallbackTable( void )
+const YNCoreEntityComponentCallbackTable *Game_Component_Movement_GetCallbackTable( void )
 {
-	static EntityComponentCallbackTable callbackTable;
+	static YNCoreEntityComponentCallbackTable callbackTable;
 	PL_ZERO_( callbackTable );
 
 	callbackTable.tickFunction = Tick;

@@ -14,9 +14,9 @@ typedef struct GameMovementComponent
 
 	float maxRunSpeed, maxWalkSpeed;
 
-	EntityComponent *inputComponent;
-	EntityComponent *cameraComponent;
+	YNCoreEntityComponent *inputComponent;
+	YNCoreEntityComponent *cameraComponent;
 } GameMovementComponent;
 #define GAME_MOVEMENT_COMPONENT( A ) ( ( GameMovementComponent * ) ( A ) )
 
-const EntityComponentCallbackTable *Game_Component_Movement_GetCallbackTable( void );
+const YNCoreEntityComponentCallbackTable *Game_Component_Movement_GetCallbackTable( void );

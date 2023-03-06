@@ -2,7 +2,7 @@
 // Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "editor_viewport_frame.h"
-#include "engine_public_renderer.h"
+#include "core_renderer.h"
 
 #include <plgraphics/plg.h>
 #include <plgraphics/plg_camera.h>

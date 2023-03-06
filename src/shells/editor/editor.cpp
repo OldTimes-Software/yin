@@ -9,6 +9,7 @@
 
 #include "editor.h"
 #include "MainWindow.h"
+#include "yin/core_input.h"
 
 // Override C++ new/delete operators, so we can track memory usage
 void *operator new( size_t size ) { return PL_NEW_( char, size ); }
@@ -245,26 +246,26 @@ int main( int argc, char **argv )
 
 extern "C"
 {
-	YRViewport *OS_Shell_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
+	YRViewport *YnCore_ShellInterface_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
 	{
 		return nullptr;
 	}
 
-	void OS_Shell_GetWindowSize( int *width, int *height ) {}
-	void OS_Shell_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
+	void YnCore_ShellInterface_GetWindowSize( int *width, int *height ) {}
+	void YnCore_ShellInterface_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
 	{
 	}
 
-	OSInputState OS_Shell_GetButtonState( ClientInputButton inputButton ) { return INPUT_STATE_NONE; }
-	OSInputState OS_Shell_GetKeyState( int key ) { return INPUT_STATE_NONE; }
-	void OS_Shell_GetMousePosition( int *x, int *y ) {}
-	void OS_Shell_SetMousePosition( int x, int y ) {}
-	void OS_Shell_GrabMouse( bool grab ) {}
+	OSInputState YnCore_ShellInterface_GetButtonState( YNCoreInputButton inputButton ) { return INPUT_STATE_NONE; }
+	OSInputState YnCore_ShellInterface_GetKeyState( int key ) { return INPUT_STATE_NONE; }
+	void YnCore_ShellInterface_GetMousePosition( int *x, int *y ) {}
+	void YnCore_ShellInterface_SetMousePosition( int x, int y ) {}
+	void YnCore_ShellInterface_GrabMouse( bool grab ) {}
 
-	void OS_Shell_PushMessage( int level, const char *msg, const PLColour *colour )
+	void YnCore_ShellInterface_PushMessage( int level, const char *msg, const PLColour *colour )
 	{
 		os::editor::mainWindow->PushMessage( level, msg, *colour );
 	}
 
-	void OS_Shell_Shutdown( void ) {}
+	void YnCore_ShellInterface_Shutdown( void ) {}
 }

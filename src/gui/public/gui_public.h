@@ -7,7 +7,7 @@
 #include <plgraphics/plg_camera.h>
 #include <plgraphics/plg_texture.h>
 
-#include "../../engine/public/engine_public_renderer.h"
+#include <yin/core_renderer.h>
 
 typedef struct GUIVector2
 {
