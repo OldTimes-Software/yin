@@ -7,7 +7,7 @@
 #include "client_input.h"
 #include "gui_public.h"
 
-#include "node/public/node.h"
+#include <yin/node.h>
 
 /****************************************
  * PRIVATE
@@ -244,13 +244,13 @@ void Client_Input_RegisterAction( const char *description,
 	inputAction->node = PlInsertLinkedListNode( actionableList, inputAction );
 }
 
-void Client_Input_SerializeConfig( NLNode *root )
+void Client_Input_SerializeConfig( YNNodeBranch *root )
 {
 	/* nothing to serialise */
 	if ( actionableList == NULL )
 		return;
 
-	NLNode *inputNode = NL_PushBackObjArray( root, SERIALISATION_NODE_NAME );
+	YNNodeBranch *inputNode = YnNode_PushBackObjectArray( root, SERIALISATION_NODE_NAME );
 	if ( inputNode == NULL )
 	{
 		PRINT_WARNING( "Failed to attach \"" SERIALISATION_NODE_NAME "\" for config!\n" );
@@ -260,9 +260,9 @@ void Client_Input_SerializeConfig( NLNode *root )
 	//PlIterateLinkedList( actionableList, NULL, NULL );
 }
 
-void Client_Input_DeserializeConfig( NLNode *root )
+void Client_Input_DeserializeConfig( YNNodeBranch *root )
 {
-	NLNode *inputNode = NL_GetChildByName( root, SERIALISATION_NODE_NAME );
+	YNNodeBranch *inputNode = YnNode_GetChildByName( root, SERIALISATION_NODE_NAME );
 	if ( inputNode == NULL )
 		return;
 }

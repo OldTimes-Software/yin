@@ -5,9 +5,9 @@
 
 #include <plcore/pl_linkedlist.h>
 
-#include "node/public/node.h"
-
 PL_EXTERN_C
+
+typedef struct YNNodeBranch YNNodeBranch;
 
 typedef char YNCoreEntityClassName[ 64 ];
 typedef char YNCoreEntityName[ 64 ];
@@ -29,8 +29,8 @@ typedef void ( *YNCoreECSpawnFunction )( YNCoreEntityComponent *self );
 typedef void ( *YNCoreECTickFunction )( YNCoreEntityComponent *self );
 typedef void ( *YNCoreECDrawFunction )( YNCoreEntityComponent *self );
 typedef void ( *YNCoreECDestroyFunction )( YNCoreEntityComponent *self );
-typedef NLNode *( *YNCoreECSerializeFunction )( YNCoreEntityComponent *self, NLNode *root );
-typedef NLNode *( *YNCoreECDeserializeFunction )( YNCoreEntityComponent *self, NLNode *root );
+typedef YNNodeBranch *( *YNCoreECSerializeFunction )( YNCoreEntityComponent *self, YNNodeBranch *root );
+typedef YNNodeBranch *( *YNCoreECDeserializeFunction )( YNCoreEntityComponent *self, YNNodeBranch *root );
 
 typedef struct YNCoreEntityComponentCallbackTable
 {
@@ -49,8 +49,8 @@ void YnCore_EntityManager_Initialize( void );
 void YnCore_EntityManager_Shutdown( void );
 void YnCore_EntityManager_Tick( void );
 void YnCore_EntityManager_Draw( YNCoreCamera *camera, YNCoreWorldSector *sector );
-void YnCore_EntityManager_Save( NLNode *root );
-void YnCore_EntityManager_Restore( NLNode *root );
+void YnCore_EntityManager_Save( YNNodeBranch *root );
+void YnCore_EntityManager_Restore( YNNodeBranch *root );
 
 // Prefabs
 void YnCore_EntityManager_RegisterEntityPrefab( const char *path );
@@ -79,8 +79,8 @@ const struct YNCoreEditorField *YnCore_EntityComponent_GetEditableProperties( co
  * ENTITY
  ****************************************/
 
-NLNode *YnCore_Entity_Serialize( YNCoreEntity *self, NLNode *root );
-YNCoreEntity *YnCore_Entity_Deserialize( NLNode *root );
+YNNodeBranch *YnCore_Entity_Serialize( YNCoreEntity *self, YNNodeBranch *root );
+YNCoreEntity *YnCore_Entity_Deserialize( YNNodeBranch *root );
 
 YNCoreEntityComponent *YnCore_Entity_GetComponentByName( YNCoreEntity *self, const char *name );
 YNCoreEntityComponent *YnCore_Entity_AttachComponentByName( YNCoreEntity *self, const char *name );

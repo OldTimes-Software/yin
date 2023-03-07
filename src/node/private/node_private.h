@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com> */
+// SPDX-License-Identifier: LGPL-3.0-or-later
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #pragma once
 
 #include <plcore/pl_linkedlist.h>
 #include <plcore/pl_console.h>
 
-#include "node.h"
+#include <yin/node.h>
 
 /* node structure
  *  string
@@ -37,23 +37,23 @@ extern int nodeLogLevelWarn;
 #define NL_MAX_BOOL_LENGTH   8 /* 0, 1, true, false */
 #define NL_MAX_TYPE_LENGTH   16
 
-typedef struct NLVarString
+typedef struct YNNodeVarString
 {
-	char    *buf;
+	char *buf;
 	uint16_t length;
-} NLVarString;
+} YNNodeVarString;
 
-typedef struct NLNode
+typedef struct YNNodeBranch
 {
-	NLVarString    name;
-	NLPropertyType type;
-	NLPropertyType childType; /* used for array types */
-	NLVarString    data;
-	NLNode        *parent;
+	YNNodeVarString name;
+	YNNodePropertyType type;
+	YNNodePropertyType childType; /* used for array types */
+	YNNodeVarString data;
+	YNNodeBranch *parent;
 
 	PLLinkedListNode *linkedListNode;
-	PLLinkedList     *linkedList;
-} NLNode;
+	PLLinkedList *linkedList;
+} YNNodeBranch;
 
-char   *xNL_PreProcessScript( char *buf, size_t *length, bool isHead );
-NLNode *xNL_PushBackNode( NLNode *parent, const char *name, NLPropertyType propertyType );
+char *YnNode_PreProcessScript( char *buf, size_t *length, bool isHead );
+YNNodeBranch *YnNode_PushBackNewBranch( YNNodeBranch *parent, const char *name, YNNodePropertyType propertyType );

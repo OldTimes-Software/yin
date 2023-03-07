@@ -3,7 +3,7 @@
 
 #include <plcore/pl_linkedlist.h>
 
-#include "node/public/node.h"
+#include <yin/node.h>
 
 #include "core_private.h"
 #include "actor.h"
@@ -54,7 +54,7 @@ const ActorSetup *actorSpawnSetup[ MAX_ACTOR_TYPES ] = {
 
 static PLLinkedList *actorList;
 
-Actor *Act_SpawnActor( ActorType type, NLNode *nodeTree )
+Actor *Act_SpawnActor( ActorType type, YNNodeBranch *nodeTree )
 {
 	Actor *actor = PL_NEW( Actor );
 	actor->node  = PlInsertLinkedListNode( actorList, actor );
@@ -77,18 +77,18 @@ Actor *Act_SpawnActor( ActorType type, NLNode *nodeTree )
 
 	if ( nodeTree != NULL )
 	{
-		NLNode *node;
-		if ( ( node = NL_GetChildByName( nodeTree, "tagName" ) ) != NULL )
+		YNNodeBranch *node;
+		if ( ( node = YnNode_GetChildByName( nodeTree, "tagName" ) ) != NULL )
 		{
-			NL_GetStr( node, actor->tagName, sizeof( actor->tagName ) );
+			YnNode_GetStr( node, actor->tagName, sizeof( actor->tagName ) );
 		}
-		if ( ( node = NL_GetChildByName( nodeTree, "position" ) ) != NULL )
+		if ( ( node = YnNode_GetChildByName( nodeTree, "position" ) ) != NULL )
 		{
-			NL_DS_DeserializeVector3( node, &actor->position );
+			YnNode_DS_DeserializeVector3( node, &actor->position );
 		}
-		if ( ( node = NL_GetChildByName( nodeTree, "angles" ) ) != NULL )
+		if ( ( node = YnNode_GetChildByName( nodeTree, "angles" ) ) != NULL )
 		{
-			NL_DS_DeserializeVector3( node, &actor->angles );
+			YnNode_DS_DeserializeVector3( node, &actor->angles );
 		}
 
 		if ( actor->setup.Deserialize != NULL )
@@ -98,7 +98,7 @@ Actor *Act_SpawnActor( ActorType type, NLNode *nodeTree )
 	return actor;
 }
 
-Actor *Act_SpawnActorById( const char *id, NLNode *nodeTree )
+Actor *Act_SpawnActorById( const char *id, YNNodeBranch *nodeTree )
 {
 	for ( unsigned int i = 0; i < MAX_ACTOR_TYPES; ++i )
 	{

@@ -15,7 +15,7 @@ enum
 	MAX_CHANNELS
 };
 
-static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
+static void SerializeModelMesh( YNNodeBranch *root, const PLGMesh *mesh )
 {
 	NL_PushBackI32( root, "materialIndex", ( int32_t ) mesh->materialIndex );
 	NL_PushBackI32( root, "numVertices", ( int32_t ) mesh->num_verts );
@@ -60,7 +60,7 @@ static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
 
 	if ( hasChannel[ CHANNEL_POSITION ] )
 	{
-		NLNode *positionArray = NL_PushBackF32Array( root, "positions", NULL, 0 );
+		YNNodeBranch *positionArray = YnNode_PushBackF32Array( root, "positions", NULL, 0 );
 		for ( uint32_t i = 0; i < mesh->num_verts; ++i )
 		{
 			NL_PushBackF32( positionArray, "x", mesh->vertices[ i ].position.x );
@@ -70,7 +70,7 @@ static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
 	}
 	if ( hasChannel[ CHANNEL_UV ] )
 	{
-		NLNode *uvArray = NL_PushBackF32Array( root, "uvs", NULL, 0 );
+		YNNodeBranch *uvArray = YnNode_PushBackF32Array( root, "uvs", NULL, 0 );
 		for ( uint32_t i = 0; i < mesh->num_verts; ++i )
 		{
 			NL_PushBackF32( uvArray, "x", mesh->vertices[ i ].st[ 0 ].x );
@@ -79,7 +79,7 @@ static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
 	}
 	if ( hasChannel[ CHANNEL_NORMAL ] )
 	{
-		NLNode *normalsArray = NL_PushBackF32Array( root, "normals", NULL, 0 );
+		YNNodeBranch *normalsArray = YnNode_PushBackF32Array( root, "normals", NULL, 0 );
 		for ( uint32_t i = 0; i < mesh->num_verts; ++i )
 		{
 			NL_PushBackF32( normalsArray, "x", mesh->vertices[ i ].normal.x );
@@ -89,7 +89,7 @@ static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
 	}
 	if ( hasChannel[ CHANNEL_COLOUR ] )
 	{
-		NLNode *coloursArray = NL_PushBackF32Array( root, "colours", NULL, 0 );
+		YNNodeBranch *coloursArray = YnNode_PushBackF32Array( root, "colours", NULL, 0 );
 		for ( uint32_t i = 0; i < mesh->num_verts; ++i )
 		{
 			PLColourF32 colour = PlColourU8ToF32( &mesh->vertices[ i ].colour );
@@ -103,13 +103,13 @@ static void SerializeModelMesh( NLNode *root, const PLGMesh *mesh )
 	NL_PushBackI32Array( root, "triangles", ( int32_t * ) mesh->indices, mesh->num_indices );
 }
 
-static NLNode *SerializeModel( const PLMModel *model )
+static YNNodeBranch *SerializeModel( const PLMModel *model )
 {
-	NLNode *root = NL_PushBackObj( NULL, "model" );
+	YNNodeBranch *root = NL_PushBackObj( NULL, "model" );
 	NL_PushBackI8( root, "version", 2 );
 
 	printf( "%u materials\n", model->numMaterials );
-	NLNode *materialList = NL_PushBackStrArray( root, "materials", NULL, 0 );
+	YNNodeBranch *materialList = NL_PushBackStrArray( root, "materials", NULL, 0 );
 	for ( uint32_t i = 0; i < model->numMaterials; ++i )
 	{
 		printf( " %u : %s\n", i, model->materials[ i ] );
@@ -117,7 +117,7 @@ static NLNode *SerializeModel( const PLMModel *model )
 	}
 
 	printf( "%u meshes\n", model->numMeshes );
-	NLNode *meshesList = NL_PushBackObjArray( root, "meshes" );
+	YNNodeBranch *meshesList = YnNode_PushBackObjArray( root, "meshes" );
 	for ( uint32_t i = 0; i < model->numMeshes; ++i )
 	{
 		printf( " %u : %s %u verts, %u tris\n", i,
@@ -132,14 +132,14 @@ static NLNode *SerializeModel( const PLMModel *model )
 		NL_PushBackBool( root, "isAnimated", true );
 		NL_PushBackI32( root, "rootBone", ( int32_t ) model->internal.skeletal_data.rootIndex );
 
-		NLNode *bonesList = NL_PushBackObjArray( root, "bones" );
+		YNNodeBranch *bonesList = YnNode_PushBackObjArray( root, "bones" );
 		for ( uint32_t i = 0; i < model->internal.skeletal_data.numBones; ++i )
 		{
-			NLNode *bone = NL_PushBackObj( bonesList, "bone" );
+			YNNodeBranch *bone = NL_PushBackObj( bonesList, "bone" );
 			NL_PushBackStr( bone, "name", model->internal.skeletal_data.bones[ i ].name );
 			NL_PushBackI32( bone, "parent", ( int32_t ) model->internal.skeletal_data.bones[ i ].parent );
-			NL_PushBackF32Array( bone, "position", ( float * ) &model->internal.skeletal_data.bones[ i ].position, 3 );
-			NL_PushBackF32Array( bone, "orientation", ( float * ) &model->internal.skeletal_data.bones[ i ].orientation, 4 );
+			YnNode_PushBackF32Array( bone, "position", ( float * ) &model->internal.skeletal_data.bones[ i ].position, 3 );
+			YnNode_PushBackF32Array( bone, "orientation", ( float * ) &model->internal.skeletal_data.bones[ i ].orientation, 4 );
 		}
 
 #if 0// todo...
@@ -203,7 +203,7 @@ int main( int argc, char **argv )
 		return EXIT_FAILURE;
 	}
 
-	NLNode *root = SerializeModel( model );
+	YNNodeBranch *root = SerializeModel( model );
 	if ( root == NULL )
 	{
 		fprintf( stderr, "Failed to serialize model!\n" );
@@ -216,10 +216,10 @@ int main( int argc, char **argv )
 		outPath = "./dump.mdl.n";
 	}
 
-	NL_WriteFile( outPath, root, PlHasCommandLineArgument( "-r" ) ? NL_FILE_UTF8 : NL_FILE_BINARY );
+	YnNode_WriteFile( outPath, root, PlHasCommandLineArgument( "-r" ) ? NL_FILE_UTF8 : NL_FILE_BINARY );
 
 	PlmDestroyModel( model );
-	NL_DestroyNode( root );
+	YnNode_DestroyBranch( root );
 
 	double timeEnd = PlGetCurrentSeconds();
 

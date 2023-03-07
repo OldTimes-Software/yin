@@ -3,11 +3,12 @@
 
 #include <plmodel/plm.h>
 
+#include <yin/node.h>
+
 #include "core_private.h"
 #include "../actor.h"
 #include "game_interface.h"
 
-#include "client/audio/audio.h"
 #include "client/renderer/renderer.h"
 #include "client/renderer/renderer_particle.h"
 
@@ -490,9 +491,9 @@ static void Prop_Tick( Actor *self, void *userData )
 #endif
 }
 
-static void Prop_Deserialize( Actor *self, NLNode *nodeTree )
+static void Prop_Deserialize( Actor *self, YNNodeBranch *nodeTree )
 {
-	const char *modelPath = NL_GetStrByName( nodeTree, "modelPath", NULL );
+	const char *modelPath = YnNode_GetStringByName( nodeTree, "modelPath", NULL );
 	if ( modelPath != NULL )
 	{
 		SGActor_Generic_SetModel( self, modelPath );

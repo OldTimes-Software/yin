@@ -7,15 +7,15 @@ PL_EXTERN_C
 
 #include <yin/core_input.h>
 
-typedef struct NLNode NLNode;
+typedef struct YNNodeBranch YNNodeBranch;
 
 typedef void ( *ClientInputActionCallback )( YNCoreInputState state );
 
 void Client_Input_Initialize( void );
 void Client_Input_Shutdown( void );
 
-void Client_Input_SerializeConfig( NLNode *root );
-void Client_Input_DeserializeConfig( NLNode *root );
+void Client_Input_SerializeConfig( YNNodeBranch *root );
+void Client_Input_DeserializeConfig( YNNodeBranch *root );
 
 void Client_Input_ClearDevices( void );
 

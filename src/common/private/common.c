@@ -1,10 +1,11 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com> */
+// SPDX-License-Identifier: LGPL-3.0-or-later
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <plcore/pl_filesystem.h>
 #include <plcore/pl_console.h>
 
-#include "node.h"
+#include <yin/node.h>
+
 #include "common.h"
 
 int logLevelPrint;
@@ -19,7 +20,7 @@ void Common_Initialize( void )
 
 	Message( "Common Library initialized\n" );
 
-	NL_SetupLogs();
+	YnNode_SetupLogs();
 
 	Common_Pkg_RegisterInterface();
 }
@@ -44,12 +45,12 @@ const char *Common_GetAppDataDirectory( void )
 	return appDataPath;
 }
 
-NLNode *Common_GetConfig( const char *name )
+YNNodeBranch *Common_GetConfig( const char *name )
 {
 	// first attempt to load from local dir
 	PLPath configPath;
 	snprintf( configPath, sizeof( configPath ), "%s/%s.cfg.n", Common_GetAppDataDirectory(), name );
-	NLNode *root = NL_LoadFile( configPath, "config" );
+	YNNodeBranch *root = YnNode_LoadFile( configPath, "config" );
 	if ( root != NULL )
 	{
 		return root;
@@ -57,22 +58,22 @@ NLNode *Common_GetConfig( const char *name )
 
 	// otherwise attempt to load from app data dir instead
 	snprintf( configPath, sizeof( configPath ), "%s.cfg.n", name );
-	root = NL_LoadFile( configPath, "config" );
+	root = YnNode_LoadFile( configPath, "config" );
 	if ( root == NULL )
 	{
 		Warning( "Failed to load user config file: %s\n"
 		         "Creating empty config.\n",
-		         NL_GetErrorMessage() );
-		root = NL_PushBackObj( NULL, "config" );
+		         YnNode_GetErrorMessage() );
+		root = YnNode_PushBackObject( NULL, "config" );
 	}
 
 	return root;
 }
 
-bool Common_WriteConfig( NLNode *root, const char *name )
+bool Common_WriteConfig( YNNodeBranch *root, const char *name )
 {
 	PLPath configPath;
 	snprintf( configPath, sizeof( configPath ), "%s/%s.cfg.n", Common_GetAppDataDirectory(), name );
-	NL_WriteFile( configPath, root, NL_FILE_UTF8 );
+	YnNode_WriteFile( configPath, root, YN_NODE_FILE_UTF8 );
 	return true;
 }

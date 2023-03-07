@@ -159,7 +159,7 @@ typedef struct YNCoreWorld
 	unsigned int numSkyMaterials;
 
 	/* additional generic properties */
-	struct NLNode *globalProperties;
+	struct YNNodeBranch *globalProperties;
 
 	uint64_t lastSaveTime;
 	bool isDirty;
@@ -168,15 +168,15 @@ typedef struct YNCoreWorld
 typedef struct YNCoreWorldEntity
 {
 	const YNCoreEntityPrefab *entityTemplate;
-	NLNode *properties;
+	YNNodeBranch *properties;
 } YNCoreWorldEntity;
 
 #include <yin/core_world.h>
 
-void YnCore_WorldSerialiser_Begin( const YNCoreWorld *world, NLNode *root );
-YNCoreWorld *YnCore_WorldDeserialiser_Begin( NLNode *root, YNCoreWorld *out );
+void YnCore_WorldSerialiser_Begin( const YNCoreWorld *world, YNNodeBranch *root );
+YNCoreWorld *YnCore_WorldDeserialiser_Begin( YNNodeBranch *root, YNCoreWorld *out );
 
-YNCoreWorldMesh *YnCore_WorldDeserialiser_BeginMesh( NLNode *root, YNCoreWorldMesh *worldMesh );
+YNCoreWorldMesh *YnCore_WorldDeserialiser_BeginMesh( YNNodeBranch *root, YNCoreWorldMesh *worldMesh );
 
 PLLinkedList *YnCore_World_GetLights( const YNCoreWorld *world );
 PLLinkedList *YnCore_World_GetSectorLights( const YNCoreWorldSector *sector );

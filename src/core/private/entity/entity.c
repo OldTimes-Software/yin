@@ -3,6 +3,8 @@
 
 #include <plcore/pl_array_vector.h>
 
+#include <yin/node.h>
+
 #include "core_private.h"
 #include "entity.h"
 
@@ -18,18 +20,18 @@ static unsigned int numTotalSpawns;
  * ENTITY
  ****************************************/
 
-NLNode *YnCore_Entity_Serialize( YNCoreEntity *self, NLNode *root )
+YNNodeBranch *YnCore_Entity_Serialize( YNCoreEntity *self, YNNodeBranch *root )
 {
-	NLNode *entityNode     = NL_PushBackObj( root, "entity" );
-	NLNode *componentsNode = NL_PushBackObjArray( entityNode, "components" );
+	YNNodeBranch *entityNode     = YnNode_PushBackObject( root, "entity" );
+	YNNodeBranch *componentsNode = YnNode_PushBackObjectArray( entityNode, "components" );
 
 	PLLinkedListNode *node = PlGetFirstNode( self->components );
 	while ( node != NULL )
 	{
-		NLNode *componentNode = NL_PushBackObj( componentsNode, NULL );
+		YNNodeBranch *componentNode = YnNode_PushBackObject( componentsNode, NULL );
 
 		YNCoreEntityComponent *entityComponent = ( YNCoreEntityComponent * ) PlGetLinkedListNodeUserData( node );
-		NL_PushBackStr( componentNode, "id", entityComponent->base->name );
+		YnNode_PushBackString( componentNode, "id", entityComponent->base->name );
 
 		const YNCoreEntityComponentBase *entityComponentTemplate = entityComponent->base;
 		if ( entityComponentTemplate->callbackTable->serializeFunction != NULL )

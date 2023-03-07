@@ -3,8 +3,9 @@
 
 #include <plcore/pl_console.h>
 
+#include <yin/node.h>
+
 #include "gui_private.h"
-#include "node/public/node.h"
 
 /****************************************
  * GUI
@@ -49,49 +50,49 @@ static unsigned int  numStyleSheets = 0;
 
 #define GUI_STYLESHEET_VERSION 1
 
-static GUIStyleSheet *ParseStyleSheet( NLNode *root )
+static GUIStyleSheet *ParseStyleSheet( YNNodeBranch *root )
 {
 	GUIStyleSheet *guiStyleSheet = &styleSheets[ numStyleSheets ];
 	PL_ZERO( guiStyleSheet, sizeof( GUIStyleSheet ) );
 
-	int version = NL_GetI32ByName( root, "version", -1 );
+	int version = YnNode_GetI32ByName( root, "version", -1 );
 	if ( version < GUI_STYLESHEET_VERSION )
 	{
 		GUI_Warning( "Unexpected version in stylesheet, expected %d but found %d!\n", GUI_STYLESHEET_VERSION, version );
 		return NULL;
 	}
 
-	NLNode *c;
-	c = NL_GetChildByName( root, "colours" );
+	YNNodeBranch *c;
+	c = YnNode_GetChildByName( root, "colours" );
 	if ( c != NULL )
 	{
-		NLNode *i;
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BACKGROUND ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BACKGROUND ], 4 );
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BACKGROUND ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BACKGROUND ], 4 );
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BORDER_TOP ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BORDER_TOP ], 4 );
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BORDER_BOTTOM ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BORDER_BOTTOM ], 4 );
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BORDER_TOP ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BORDER_TOP ], 4 );
-		if ( ( i = NL_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BORDER_BOTTOM ) ) ) != NULL )
-			NL_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BORDER_BOTTOM ], 4 );
+		YNNodeBranch *i;
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BACKGROUND ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BACKGROUND ], 4 );
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BACKGROUND ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BACKGROUND ], 4 );
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BORDER_TOP ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BORDER_TOP ], 4 );
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_INSET_BORDER_BOTTOM ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_INSET_BORDER_BOTTOM ], 4 );
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BORDER_TOP ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BORDER_TOP ], 4 );
+		if ( ( i = YnNode_GetChildByName( c, PL_STRINGIFY( GUI_COLOUR_OUTSET_BORDER_BOTTOM ) ) ) != NULL )
+			YnNode_GetF32Array( i, ( float * ) &guiStyleSheet->colours[ GUI_COLOUR_OUTSET_BORDER_BOTTOM ], 4 );
 	}
 
-	c = NL_GetChildByName( root, "borders" );
+	c = YnNode_GetChildByName( root, "borders" );
 	if ( c != NULL )
 	{
-		int style = NL_GetI32ByName( c, "style", -1 );
+		int style = YnNode_GetI32ByName( c, "style", -1 );
 		if ( !( style < 0 || style >= GUI_MAX_BORDER_STYLES ) )
 			guiStyleSheet->borderStyle = style;
 		else
 			GUI_Warning( "No border style specified, using default.\n" );
 
-		NLNode *i;
-		if ( ( i = NL_GetChildByName( c, "padding" ) ) != NULL )
-			NL_GetI32Array( i, guiStyleSheet->borderPadding, GUI_MAX_BORDER_ELEMENTS );
+		YNNodeBranch *i;
+		if ( ( i = YnNode_GetChildByName( c, "padding" ) ) != NULL )
+			YnNode_GetI32Array( i, guiStyleSheet->borderPadding, GUI_MAX_BORDER_ELEMENTS );
 	}
 
 	return guiStyleSheet;
@@ -99,10 +100,10 @@ static GUIStyleSheet *ParseStyleSheet( NLNode *root )
 
 const GUIStyleSheet *GUI_CacheStyleSheet( const char *path )
 {
-	NLNode *root = NL_LoadFile( path, "guiStyle" );
+	YNNodeBranch *root = YnNode_LoadFile( path, "guiStyle" );
 	if ( root == NULL )
 	{
-		GUI_Warning( "Failed to load node file: %s\n", NL_GetErrorMessage() );
+		GUI_Warning( "Failed to load node file: %s\n", YnNode_GetErrorMessage() );
 		return NULL;
 	}
 

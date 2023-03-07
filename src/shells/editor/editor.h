@@ -56,7 +56,7 @@ namespace os::editor
 		Project( const char *name ) {}
 
 		PLPath path{};
-		NLNode *config{ nullptr };
+		YNNodeBranch *config{ nullptr };
 		PLFileSystemMount *mount{ nullptr };
 		const char *name{ nullptr };
 
@@ -82,5 +82,5 @@ namespace os::editor
 	};
 	extern PLPath cachedPaths[];
 
-	extern NLNode *editorConfig;
+	extern YNNodeBranch *editorConfig;
 }// namespace os::editor

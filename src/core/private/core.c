@@ -16,7 +16,8 @@
 
 #include "server/server.h"
 #include "net/net.h"
-#include "node/public/node.h"
+
+#include <yin/node.h>
 
 /****************************************
  * PRIVATE
@@ -24,8 +25,8 @@
 
 static unsigned int numTicks = 0;
 
-static NLNode *engineConfig;
-static NLNode *userConfig;
+static YNNodeBranch *engineConfig;
+static YNNodeBranch *userConfig;
 
 static bool engineTerminalMode = false;
 static bool engineInitialized  = false;
@@ -34,8 +35,8 @@ static bool engineInitialized  = false;
  * PUBLIC
  ****************************************/
 
-NLNode *YnCore_GetConfig( void ) { return engineConfig; }
-NLNode *YnCore_GetUserConfig( void ) { return userConfig; }
+YNNodeBranch *YnCore_GetConfig( void ) { return engineConfig; }
+YNNodeBranch *YnCore_GetUserConfig( void ) { return userConfig; }
 
 bool YnCore_Initialize( const char *config )
 {
@@ -66,18 +67,18 @@ bool YnCore_Initialize( const char *config )
 		config = ENGINE_BASE_CONFIG;
 	}
 	const char *configPath = PlGetCommandLineArgumentValue( "-config" );
-	engineConfig           = NL_LoadFile( configPath != NULL ? configPath : config, "config" );
+	engineConfig           = YnNode_LoadFile( configPath != NULL ? configPath : config, "config" );
 	if ( engineConfig == NULL )
 	{
-		PRINT_WARNING( "Failed to open engine config: %s\n", NL_GetErrorMessage() );
+		PRINT_WARNING( "Failed to open engine config: %s\n", YnNode_GetErrorMessage() );
 		return false;
 	}
 
-	userConfig = NL_LoadFile( FileSystem_GetUserConfigLocation(), "config" );
+	userConfig = YnNode_LoadFile( FileSystem_GetUserConfigLocation(), "config" );
 	if ( userConfig == NULL )
 	{
 		PRINT( "No existing user config found, will use defaults.\n" );
-		userConfig = NL_PushBackObj( NULL, "config" );
+		userConfig = YnNode_PushBackObject( NULL, "config" );
 	}
 
 	FileSystem_SetupConfig( engineConfig );

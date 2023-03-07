@@ -9,7 +9,7 @@
 #include "world.h"
 #include "game_interface.h"
 
-#include "node/public/node.h"
+#include <yin/node.h>
 #include "gui_public.h"
 
 static PLLinkedList *materials[ YN_CORE_MAX_CACHE_GROUPS ];
@@ -209,20 +209,20 @@ static bool ValidateMaterialVariable( MaterialVariable *variable, PLGShaderUnifo
  * Iterate through each of the parameters provided in the 'shaderParameters'
  * block of the material.
  */
-static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *root )
+static void ParseShaderParameters( YNCoreMaterialPass *materialPass, YNNodeBranch *root )
 {
-	NLNode *node = NL_GetFirstChild( root );
+	YNNodeBranch *node = YnNode_GetFirstChild( root );
 	while ( node != NULL )
 	{
 		/* fetch the next node, so we can roll onto the next element early */
-		NLNode *next = NL_GetNextChild( node );
+		YNNodeBranch *next = YnNode_GetNextChild( node );
 
 		MaterialVariable *materialVariable = &materialPass->variables[ materialPass->numVariables ];
 
 		/* validate that the property actually exists or is at least exposed by the shader.
 		 * in the long-term we'll be doing this against our own shader program object, but
 		 * for now, just do it directly against the shader itself */
-		const char *propertyName      = NL_GetName( node );
+		const char *propertyName      = YnNode_GetName( node );
 		materialVariable->programSlot = PlgGetShaderUniformSlot( materialPass->program, propertyName );
 		if ( materialVariable->programSlot == -1 )
 		{
@@ -236,10 +236,10 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 		PLGShaderUniformType uniformType = PlgGetShaderUniformType( materialPass->program, materialVariable->programSlot );
 
 		/* if it's a string, it *could* be a built-in type */
-		if ( NL_GetType( node ) == NL_PROP_STR )
+		if ( YnNode_GetType( node ) == YN_NODE_PROP_STR )
 		{
 			PLPath value;
-			NL_GetStr( node, value, sizeof( value ) );
+			YnNode_GetStr( node, value, sizeof( value ) );
 			if ( *value == '_' )
 			{
 				const char *p = ( value + 1 );
@@ -287,7 +287,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 
 				case PLG_UNIFORM_BOOL:
 				{
-					if ( NL_GetBool( node, &materialVariable->data.boolean ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetBool( node, &materialVariable->data.boolean ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					materialVariable->type = MATERIAL_VAR_BOOL;
@@ -296,7 +296,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 
 				case PLG_UNIFORM_FLOAT:
 				{
-					if ( NL_GetF32( node, &materialVariable->data.f32 ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetF32( node, &materialVariable->data.f32 ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					materialVariable->type = MATERIAL_VAR_FLOAT;
@@ -304,7 +304,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 				}
 				case PLG_UNIFORM_DOUBLE:
 				{
-					if ( NL_GetF64( node, &materialVariable->data.f64 ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetF64( node, &materialVariable->data.f64 ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					materialVariable->type = MATERIAL_VAR_DOUBLE;
@@ -313,7 +313,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 
 				case PLG_UNIFORM_UINT:
 				{
-					if ( NL_GetUI32( node, &materialVariable->data.ui32 ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetUI32( node, &materialVariable->data.ui32 ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					materialVariable->type = MATERIAL_VAR_UINT;
@@ -321,7 +321,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 				}
 				case PLG_UNIFORM_INT:
 				{
-					if ( NL_GetI32( node, &materialVariable->data.i32 ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetI32( node, &materialVariable->data.i32 ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					materialVariable->type = MATERIAL_VAR_INT;
@@ -336,7 +336,7 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 				case PLG_UNIFORM_SAMPLER2DSHADOW:
 				{
 					PLPath texturePath;
-					if ( NL_GetStr( node, texturePath, sizeof( PLPath ) ) != NL_ERROR_SUCCESS )
+					if ( YnNode_GetStr( node, texturePath, sizeof( PLPath ) ) != YN_NODE_ERROR_SUCCESS )
 						break;
 
 					if ( pl_strcasecmp( materialVariable->name, "diffuseMap" ) == 0 )
@@ -373,14 +373,14 @@ static void ParseShaderParameters( YNCoreMaterialPass *materialPass, NLNode *roo
 	}
 }
 
-void YnCore_Material_ParsePass( NLNode *root, YNCoreMaterialPass *materialPass )
+void YnCore_Material_ParsePass( YNNodeBranch *root, YNCoreMaterialPass *materialPass )
 {
 	/* fetch the blend mode we'll use for the pass */
-	NLNode *subNode;
-	if ( ( subNode = NL_GetChildByName( root, "blendMode" ) ) != NULL )
+	YNNodeBranch *subNode;
+	if ( ( subNode = YnNode_GetChildByName( root, "blendMode" ) ) != NULL )
 	{
 		const char *blendModesArray[ 2 ];
-		if ( NL_GetStrArray( subNode, blendModesArray, 2 ) == NL_ERROR_SUCCESS )
+		if ( YnNode_GetStrArray( subNode, blendModesArray, 2 ) == YN_NODE_ERROR_SUCCESS )
 		{
 			materialPass->blendMode[ 0 ] = RM_GetBlendModeByTag( blendModesArray[ 0 ] );
 			materialPass->blendMode[ 1 ] = RM_GetBlendModeByTag( blendModesArray[ 1 ] );
@@ -389,10 +389,10 @@ void YnCore_Material_ParsePass( NLNode *root, YNCoreMaterialPass *materialPass )
 			PRINT_WARNING( "Invalid blend mode array in material!\n" );
 	}
 
-	materialPass->depthTest = NL_GetBoolByName( root, "depthTest", materialPass->depthTest );
-	materialPass->cullMode  = NL_GetI32ByName( root, "cullMode", materialPass->cullMode );
+	materialPass->depthTest = YnNode_GetBoolByName( root, "depthTest", materialPass->depthTest );
+	materialPass->cullMode  = YnNode_GetI32ByName( root, "cullMode", materialPass->cullMode );
 
-	const char *textureFilterPtr = NL_GetStrByName( root, "textureFilterMode", NULL );
+	const char *textureFilterPtr = YnNode_GetStringByName( root, "textureFilterMode", NULL );
 	if ( textureFilterPtr != NULL )
 	{
 		if ( pl_strcasecmp( textureFilterPtr, "mipmap_nearest" ) == 0 )
@@ -412,7 +412,7 @@ void YnCore_Material_ParsePass( NLNode *root, YNCoreMaterialPass *materialPass )
 		materialPass->textureFilter = PLG_TEXTURE_FILTER_MIPMAP_LINEAR;
 
 	/* now handle any specific parameters the material provides */
-	if ( ( subNode = NL_GetChildByName( root, "shaderParameters" ) ) != NULL )
+	if ( ( subNode = YnNode_GetChildByName( root, "shaderParameters" ) ) != NULL )
 	{
 		/* there's some extra complexity when parsing in parameters, so we'll defer that
 		 * to another function */
@@ -422,13 +422,13 @@ void YnCore_Material_ParsePass( NLNode *root, YNCoreMaterialPass *materialPass )
 	 * a case where we only want to use the shader defaults? */
 }
 
-static YNCoreMaterial *ParseMaterial( YNCoreMaterial *material, NLNode *root, bool preview )
+static YNCoreMaterial *ParseMaterial( YNCoreMaterial *material, YNNodeBranch *root, bool preview )
 {
 	// see if the preview texture is specified
 	if ( material->preview == NULL )
 	{
 		material->preview          = previewFallbackTexture;
-		const char *previewTexture = NL_GetStrByName( root, "previewTexture", NULL );
+		const char *previewTexture = YnNode_GetStringByName( root, "previewTexture", NULL );
 		if ( previewTexture != NULL )
 			material->preview = YnCore_LoadTexture( previewTexture, PLG_TEXTURE_FILTER_MIPMAP_LINEAR );
 	}
@@ -439,10 +439,10 @@ static YNCoreMaterial *ParseMaterial( YNCoreMaterial *material, NLNode *root, bo
 
 	/* each pass specifies how the object should be drawn before
 	 * drawing it again and again for each child */
-	NLNode *node;
-	if ( ( node = NL_GetChildByName( root, "passes" ) ) != NULL )
+	YNNodeBranch *node;
+	if ( ( node = YnNode_GetChildByName( root, "passes" ) ) != NULL )
 	{
-		node = NL_GetFirstChild( node );
+		node = YnNode_GetFirstChild( node );
 		while ( node != NULL )
 		{
 			YNCoreMaterialPass *currentPass = &material->passes[ material->numPasses++ ];
@@ -450,7 +450,7 @@ static YNCoreMaterial *ParseMaterial( YNCoreMaterial *material, NLNode *root, bo
 			 * so no need to reset the state for some crap */
 
 			/* fetch the shader program we need to use for this pass */
-			const char *programName          = NL_GetStrByName( node, "shaderProgram", "default" );
+			const char *programName          = YnNode_GetStringByName( node, "shaderProgram", "default" );
 			YNCoreShaderProgramIndex *programIndex = YnCore_GetShaderProgramByName( programName );
 			if ( programIndex == NULL )
 			{
@@ -465,7 +465,7 @@ static YNCoreMaterial *ParseMaterial( YNCoreMaterial *material, NLNode *root, bo
 
 			YnCore_Material_ParsePass( node, currentPass );
 
-			node = NL_GetNextChild( node );
+			node = YnNode_GetNextChild( node );
 		}
 	}
 
@@ -536,14 +536,14 @@ YNCoreMaterial *YnCore_Material_Cache( const char *path, YNCoreCacheGroup group,
 		// If it's not cached, and we're not asking for the preview, load the full thing
 		if ( !material->isCached && !preview )
 		{
-			NLNode *root = NL_LoadFile( path, "material" );
+			YNNodeBranch *root = YnNode_LoadFile( path, "material" );
 			if ( root != NULL )
 			{
 				ParseMaterial( material, root, false );
-				NL_DestroyNode( root );
+				YnNode_DestroyBranch( root );
 			}
 			else
-				PRINT_WARNING( "Failed to cache material, \"%s\" (%s)!\n", path, NL_GetErrorMessage() );
+				PRINT_WARNING( "Failed to cache material, \"%s\" (%s)!\n", path, YnNode_GetErrorMessage() );
 		}
 		MemoryManager_AddReference( &material->mem );
 		return material;
@@ -552,17 +552,17 @@ YNCoreMaterial *YnCore_Material_Cache( const char *path, YNCoreCacheGroup group,
 	/* fallback should be optional, as in some cases we might actually care */
 	YNCoreMaterial *fallbackPtr = useFallback ? fallbackMaterial : NULL;
 
-	NLNode *root = NL_LoadFile( path, "material" );
+	YNNodeBranch *root = YnNode_LoadFile( path, "material" );
 	if ( root == NULL )
 	{
-		PRINT_WARNING( "Failed to load material, \"%s\" (%s)!\n", path, NL_GetErrorMessage() );
+		PRINT_WARNING( "Failed to load material, \"%s\" (%s)!\n", path, YnNode_GetErrorMessage() );
 		return fallbackPtr;
 	}
 
 	material = PL_NEW( YNCoreMaterial );
 	ParseMaterial( material, root, preview );
 
-	NL_DestroyNode( root );
+	YnNode_DestroyBranch( root );
 
 	snprintf( material->path, sizeof( material->path ), "%s", path );
 	material->node = PlInsertLinkedListNode( materials[ group ], material );

@@ -127,7 +127,7 @@ typedef struct YNCoreShaderProgramIndex
 	struct PLLinkedListNode *node;
 } YNCoreShaderProgramIndex;
 
-void YnCore_Material_ParsePass( struct NLNode *root, YNCoreMaterialPass *materialPass );
+void YnCore_Material_ParsePass( struct YNNodeBranch *root, YNCoreMaterialPass *materialPass );
 
 void YnCore_InitializeMaterialSystem( void );
 void YnCore_ShutdownMaterialSystem( void );

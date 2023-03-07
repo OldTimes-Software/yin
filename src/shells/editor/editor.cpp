@@ -22,16 +22,16 @@ unsigned int editorLogWarnId;
 unsigned int editorLogErrorId;
 
 PLPath os::editor::cachedPaths[ MAX_CACHED_PATHS ];
-NLNode *os::editor::editorConfig;
+YNNodeBranch *os::editor::editorConfig;
 
 static void GenerateProjectConfig( const char *name, const char *path )
 {
-	NLNode *root = NL_PushBackObj( nullptr, "config" );
+	YNNodeBranch *root = NL_PushBackObj( nullptr, "config" );
 	NL_PushBackStr( root, "title", name );
 	const static constexpr int version[ 3 ] = { 0, 0, 0 };
 	NL_PushBackI32Array( root, "version", version, 3 );
-	NL_WriteFile( path, root, NL_FILE_UTF8 );
-	NL_DestroyNode( root );
+	YnNode_WriteFile( path, root, NL_FILE_UTF8 );
+	YnNode_DestroyBranch( root );
 }
 
 /**
@@ -148,14 +148,14 @@ static void SetupConfig()
 	PlAppendPath( path, "/editor.cfg.n", true );
 
 	// first try and load it locally
-	if ( ( os::editor::editorConfig = NL_LoadFile( path, "config" ) ) == nullptr )
+	if ( ( os::editor::editorConfig = YnNode_LoadFile( path, "config" ) ) == nullptr )
 	{
 		// try again, but from config location
 		PlSetPath( path, "local://", true );
 		PlAppendPath( path, os::editor::cachedPaths[ os::editor::PATH_CONFIG ], true );
 		PlAppendPath( path, "/editor.cfg.n", true );
 
-		if ( ( os::editor::editorConfig = NL_LoadFile( path, "config" ) ) == nullptr )
+		if ( ( os::editor::editorConfig = YnNode_LoadFile( path, "config" ) ) == nullptr )
 		{
 			// uh oh! just append an object and return
 			os::editor::editorConfig = NL_PushBackObj( nullptr, "config" );

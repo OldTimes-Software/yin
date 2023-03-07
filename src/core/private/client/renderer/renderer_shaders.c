@@ -4,7 +4,7 @@
 #include "core_private.h"
 #include "renderer.h"
 
-#include "node/public/node.h"
+#include <yin/node.h>
 
 /**********************************************************/
 /** Shaders **/
@@ -37,13 +37,13 @@ static void RS_RegisterShaderStage( PLGShaderProgram *program, PLGShaderStageTyp
 	PlFree( buffer );
 }
 
-static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
+static YNCoreShaderProgramIndex *RS_ParseShaderProgram( YNNodeBranch *root )
 {
 	YNCoreShaderProgramIndex program;
 	memset( &program, 0, sizeof( YNCoreShaderProgramIndex ) );
 
-	const char *vertexPath = NL_GetStrByName( root, "vertexPath", NULL );
-	const char *fragmentPath = NL_GetStrByName( root, "fragmentPath", NULL );
+	const char *vertexPath = YnNode_GetStringByName( root, "vertexPath", NULL );
+	const char *fragmentPath = YnNode_GetStringByName( root, "fragmentPath", NULL );
 
 	if ( vertexPath == NULL || fragmentPath == NULL )
 	{
@@ -61,7 +61,7 @@ static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
 	snprintf( program.shaderPaths[ PLG_SHADER_TYPE_VERTEX ], PL_SYSTEM_MAX_PATH, "%s", vertexPath );
 	snprintf( program.shaderPaths[ PLG_SHADER_TYPE_FRAGMENT ], PL_SYSTEM_MAX_PATH, "%s", fragmentPath );
 
-	const char *internalName = NL_GetStrByName( root, "description", NULL );
+	const char *internalName = YnNode_GetStringByName( root, "description", NULL );
 	if ( internalName != NULL )
 		snprintf( program.internalName, sizeof( program.internalName ), "%s", internalName );
 	else
@@ -83,17 +83,17 @@ static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
 	unsigned int numDefinitions[ PLG_MAX_SHADER_TYPES ];
 	PL_ZERO( numDefinitions, sizeof( unsigned int ) * PLG_MAX_SHADER_TYPES );
 
-	NLNode *child = NL_GetChildByName( root, "definitions" );
+	YNNodeBranch *child = YnNode_GetChildByName( root, "definitions" );
 	if ( child != NULL )
 	{
-		NLNode *subChild;
-		if ( ( subChild = NL_GetChildByName( child, "fragment" ) ) != NULL )
+		YNNodeBranch *subChild;
+		if ( ( subChild = YnNode_GetChildByName( child, "fragment" ) ) != NULL )
 		{
-			numDefinitions[ PLG_SHADER_TYPE_FRAGMENT ] = NL_GetNumOfChildren( subChild );
+			numDefinitions[ PLG_SHADER_TYPE_FRAGMENT ] = YnNode_GetNumOfChildren( subChild );
 			if ( numDefinitions[ PLG_SHADER_TYPE_FRAGMENT ] > PLG_MAX_DEFINITIONS )
 				numDefinitions[ PLG_SHADER_TYPE_FRAGMENT ] = PLG_MAX_DEFINITIONS;
 
-			subChild = NL_GetFirstChild( subChild );
+			subChild = YnNode_GetFirstChild( subChild );
 			for ( unsigned int i = 0; i < numDefinitions[ PLG_SHADER_TYPE_FRAGMENT ]; ++i )
 			{
 				if ( subChild == NULL )
@@ -103,17 +103,17 @@ static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
 					break;
 				}
 
-				NL_GetStr( subChild, fragmentDefinitions[ i ], PLG_MAX_DEFINITION_LENGTH );
-				subChild = NL_GetNextChild( subChild );
+				YnNode_GetStr( subChild, fragmentDefinitions[ i ], PLG_MAX_DEFINITION_LENGTH );
+				subChild = YnNode_GetNextChild( subChild );
 			}
 		}
-		if ( ( subChild = NL_GetChildByName( child, "vertex" ) ) != NULL )
+		if ( ( subChild = YnNode_GetChildByName( child, "vertex" ) ) != NULL )
 		{
-			numDefinitions[ PLG_SHADER_TYPE_VERTEX ] = NL_GetNumOfChildren( subChild );
+			numDefinitions[ PLG_SHADER_TYPE_VERTEX ] = YnNode_GetNumOfChildren( subChild );
 			if ( numDefinitions[ PLG_SHADER_TYPE_VERTEX ] > PLG_MAX_DEFINITIONS )
 				numDefinitions[ PLG_SHADER_TYPE_VERTEX ] = PLG_MAX_DEFINITIONS;
 
-			subChild = NL_GetFirstChild( subChild );
+			subChild = YnNode_GetFirstChild( subChild );
 			for ( unsigned int i = 0; i < numDefinitions[ PLG_SHADER_TYPE_VERTEX ]; ++i )
 			{
 				if ( subChild == NULL )
@@ -123,8 +123,8 @@ static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
 					break;
 				}
 
-				NL_GetStr( subChild, vertexDefinitions[ i ], PLG_MAX_DEFINITION_LENGTH );
-				subChild = NL_GetNextChild( subChild );
+				YnNode_GetStr( subChild, vertexDefinitions[ i ], PLG_MAX_DEFINITION_LENGTH );
+				subChild = YnNode_GetNextChild( subChild );
 			}
 		}
 	}
@@ -142,7 +142,7 @@ static YNCoreShaderProgramIndex *RS_ParseShaderProgram( NLNode *root )
 	/* the default pass is an optional field that can outline
 	 * the initial properties that should be used during a draw.
 	 * a material can of course overwrite these. */
-	child = NL_GetChildByName( root, "defaultPass" );
+	child = YnNode_GetChildByName( root, "defaultPass" );
 	if ( child != NULL )
 	{
 		/* need to assign this for variable validation */
@@ -161,7 +161,7 @@ static void RS_LoadShaderProgram( const char *path, void *userData )
 {
 	PRINT( "Loading program: \"%s\"\n", path );
 
-	NLNode *root = NL_LoadFile( path, "program" );
+	YNNodeBranch *root = YnNode_LoadFile( path, "program" );
 	if ( root == NULL )
 	{
 		PRINT_WARNING( "Failed to load shader program \"%s\"!\nPL: %s\n", path, PlGetError() );
@@ -170,7 +170,7 @@ static void RS_LoadShaderProgram( const char *path, void *userData )
 
 	YNCoreShaderProgramIndex *program = RS_ParseShaderProgram( root );
 
-	NL_DestroyNode( root );
+	YnNode_DestroyBranch( root );
 
 	if ( program == NULL )
 	{

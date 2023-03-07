@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
+#include <yin/node.h>
+
 #include "fw_weapon.h"
 
 typedef enum FWWeaponType
@@ -17,20 +19,20 @@ typedef struct FWWeapon
 
 void FW_Weapon_LoadTypes( void )
 {
-	NLNode *node = NL_LoadFile( "config/weapons.cfg.n", "weapons" );
+	YNNodeBranch *node = YnNode_LoadFile( "config/weapons.cfg.n", "weapons" );
 	if ( node == NULL )
 	{
-		Game_Warning( "Failed to open weapons config: %s\n", NL_GetErrorMessage() );
+		Game_Warning( "Failed to open weapons config: %s\n", YnNode_GetErrorMessage() );
 		return;
 	}
 
-	NLNode *weaponObject = NL_GetFirstChild( node );
+	YNNodeBranch *weaponObject = YnNode_GetFirstChild( node );
 	while ( weaponObject != NULL )
 	{
-		const char *c = NL_GetStrByName( weaponObject, "name", NULL );
+		const char *c = YnNode_GetStringByName( weaponObject, "name", NULL );
 
-		weaponObject = NL_GetNextChild( weaponObject );
+		weaponObject = YnNode_GetNextChild( weaponObject );
 	}
 
-	NL_DestroyNode( node );
+	YnNode_DestroyBranch( node );
 }

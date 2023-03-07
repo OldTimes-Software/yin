@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 /* Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com> */
 
+#include <yin/node.h>
+
 #include "core_private.h"
 #include "renderer_scenegraph.h"
 
@@ -16,21 +18,21 @@ typedef struct SGNode
 static PLLinkedList *	 sceneGraph = NULL;
 static PLLinkedListNode *rootNode	= NULL;
 
-SGTransform *SG_DS_Transform( NLNode *root, const char *childName, SGTransform *out )
+SGTransform *SG_DS_Transform( YNNodeBranch *root, const char *childName, SGTransform *out )
 {
 	SG_InitializeTransform( out );
 
-	NLNode *child = NL_GetChildByName( root, childName );
+	YNNodeBranch *child = YnNode_GetChildByName( root, childName );
 	if ( child == NULL )
 		return NULL;
 
-	NLNode *n;
-	if ( ( n = NL_GetChildByName( child, "rotation" ) ) != NULL )
+	YNNodeBranch *n;
+	if ( ( n = YnNode_GetChildByName( child, "rotation" ) ) != NULL )
 		NL_DS_DeserializeQuaternion( n, &out->rotation );
-	if ( ( n = NL_GetChildByName( child, "scale" ) ) != NULL )
-		NL_DS_DeserializeVector3( n, &out->scale );
-	if ( ( n = NL_GetChildByName( child, "translation" ) ) != NULL )
-		NL_DS_DeserializeVector3( n, &out->translation );
+	if ( ( n = YnNode_GetChildByName( child, "scale" ) ) != NULL )
+		YnNode_DS_DeserializeVector3( n, &out->scale );
+	if ( ( n = YnNode_GetChildByName( child, "translation" ) ) != NULL )
+		YnNode_DS_DeserializeVector3( n, &out->translation );
 
 	return out;
 }

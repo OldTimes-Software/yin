@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
+
+#include <yin/node.h>
 
 #include "core_private.h"
 #include "world.h"
@@ -48,18 +50,18 @@ static void GenerateFaceNormal( const YNCoreWorldMesh *mesh, YNCoreWorldFace *fa
 	face->normal = PlNormalizeVector3( face->normal );
 }
 
-static void DeserializeMaterials( NLNode *meshNode, YNCoreWorldMesh *meshPtr )
+static void DeserializeMaterials( YNNodeBranch *meshNode, YNCoreWorldMesh *meshPtr )
 {
-	NLNode *materialsList = NL_GetChildByName( meshNode, "materials" );
+	YNNodeBranch *materialsList = YnNode_GetChildByName( meshNode, "materials" );
 	if ( materialsList == NULL )
 	{
 		PRINT_WARNING( "No materials for mesh: %s!\n", meshPtr->id );
 		return;
 	}
 
-	meshPtr->numMaterials = NL_GetNumOfChildren( materialsList );
-	meshPtr->materials    = PlCAlloc( meshPtr->numMaterials, sizeof( YNCoreMaterial    *), true );
-	NLNode *materialNode  = NL_GetFirstChild( materialsList );
+	meshPtr->numMaterials      = YnNode_GetNumOfChildren( materialsList );
+	meshPtr->materials         = PlCAlloc( meshPtr->numMaterials, sizeof( YNCoreMaterial         *), true );
+	YNNodeBranch *materialNode = YnNode_GetFirstChild( materialsList );
 	for ( unsigned int i = 0; i < meshPtr->numMaterials; ++i )
 	{
 		if ( materialNode == NULL )
@@ -70,21 +72,21 @@ static void DeserializeMaterials( NLNode *meshNode, YNCoreWorldMesh *meshPtr )
 		}
 
 		char materialPath[ PL_SYSTEM_MAX_PATH ];
-		NL_GetStr( materialNode, materialPath, sizeof( materialPath ) );
+		YnNode_GetStr( materialNode, materialPath, sizeof( materialPath ) );
 		meshPtr->materials[ i ] = YnCore_Material_Cache( materialPath, YN_CORE_CACHE_GROUP_WORLD, true, false );
-		materialNode            = NL_GetNextChild( materialNode );
+		materialNode            = YnNode_GetNextChild( materialNode );
 	}
 }
 
-static YNCoreWorldVertex *DeserializeVertices( NLNode *meshNode, unsigned int *numVertices )
+static YNCoreWorldVertex *DeserializeVertices( YNNodeBranch *meshNode, unsigned int *numVertices )
 {
-	NLNode *verticesList = NL_GetChildByName( meshNode, "vertices" );
+	YNNodeBranch *verticesList = YnNode_GetChildByName( meshNode, "vertices" );
 	if ( verticesList == NULL )
 		return NULL;
 
-	unsigned int numChildren = NL_GetNumOfChildren( verticesList );
+	unsigned int numChildren = YnNode_GetNumOfChildren( verticesList );
 	float *data              = PL_NEW_( float, numChildren );
-	if ( NL_GetF32Array( verticesList, ( float * ) data, numChildren ) != NL_ERROR_SUCCESS )
+	if ( YnNode_GetF32Array( verticesList, ( float * ) data, numChildren ) != YN_NODE_ERROR_SUCCESS )
 	{
 		PRINT_WARNING( "Failed to fetch all vertices for mesh!\n" );
 		PL_DELETE( data );
@@ -95,17 +97,17 @@ static YNCoreWorldVertex *DeserializeVertices( NLNode *meshNode, unsigned int *n
 	return ( YNCoreWorldVertex * ) data;
 }
 
-static void DeserializeFaces( NLNode *meshNode, YNCoreWorldMesh *worldMesh )
+static void DeserializeFaces( YNNodeBranch *meshNode, YNCoreWorldMesh *worldMesh )
 {
-	NLNode *facesList = NL_GetChildByName( meshNode, "faces" );
+	YNNodeBranch *facesList = YnNode_GetChildByName( meshNode, "faces" );
 	if ( facesList == NULL )
 	{
 		PRINT_WARNING( "No faces for mesh: %s!\n", worldMesh->id );
 		return;
 	}
 
-	unsigned int numFaces = NL_GetNumOfChildren( facesList );
-	NLNode *faceNode      = NL_GetFirstChild( facesList );
+	unsigned int numFaces  = YnNode_GetNumOfChildren( facesList );
+	YNNodeBranch *faceNode = YnNode_GetFirstChild( facesList );
 	for ( unsigned int i = 0; i < numFaces; ++i )
 	{
 		if ( faceNode == NULL )
@@ -116,19 +118,19 @@ static void DeserializeFaces( NLNode *meshNode, YNCoreWorldMesh *worldMesh )
 
 		YNCoreWorldFace *face = PL_NEW( YNCoreWorldFace );
 
-		int materialIndex = NL_GetI32ByName( faceNode, "material", -1 );
+		int materialIndex = YnNode_GetI32ByName( faceNode, "material", -1 );
 		if ( materialIndex >= 0 && materialIndex < worldMesh->numMaterials )
 			face->material = worldMesh->materials[ materialIndex ];
 
-		face->materialAngle = NL_GetF32ByName( faceNode, "materialAngle", 0.0f );
+		face->materialAngle = YnNode_GetF32ByName( faceNode, "materialAngle", 0.0f );
 
-		NL_DS_DeserializeVector2( NL_GetChildByName( faceNode, "materialOffset" ), &face->materialOffset );
-		NL_DS_DeserializeVector2( NL_GetChildByName( faceNode, "materialScale" ), &face->materialScale );
+		NL_DS_DeserializeVector2( YnNode_GetChildByName( faceNode, "materialOffset" ), &face->materialOffset );
+		NL_DS_DeserializeVector2( YnNode_GetChildByName( faceNode, "materialScale" ), &face->materialScale );
 
-		NLNode *n;
-		if ( ( n = NL_GetChildByName( faceNode, "vertices" ) ) != NULL )
+		YNNodeBranch *n;
+		if ( ( n = YnNode_GetChildByName( faceNode, "vertices" ) ) != NULL )
 		{
-			face->numVertices = NL_GetNumOfChildren( n );
+			face->numVertices = YnNode_GetNumOfChildren( n );
 			if ( face->numVertices >= WORLD_FACE_MAX_SIDES )
 			{
 				PRINT_WARNING( "Too many vertices for face: %d!\n", i );
@@ -136,23 +138,23 @@ static void DeserializeFaces( NLNode *meshNode, YNCoreWorldMesh *worldMesh )
 			}
 
 			if ( face->numVertices > 0 )
-				NL_GetUI32Array( n, face->vertices, face->numVertices );
+				YnNode_GetUI32Array( n, face->vertices, face->numVertices );
 		}
 
-		face->flags = NL_GetI32ByName( faceNode, "flags", 0 );
+		face->flags = YnNode_GetI32ByName( faceNode, "flags", 0 );
 
 		GenerateFaceNormal( worldMesh, face );
 
 		PlInsertLinkedListNode( worldMesh->faces, face );
 
-		faceNode = NL_GetNextChild( faceNode );
+		faceNode = YnNode_GetNextChild( faceNode );
 	}
 }
 
 /**
  * Deserialise a mesh from the given node.
  */
-YNCoreWorldMesh *YnCore_WorldDeserialiser_BeginMesh( NLNode *root, YNCoreWorldMesh *worldMesh )
+YNCoreWorldMesh *YnCore_WorldDeserialiser_BeginMesh( YNNodeBranch *root, YNCoreWorldMesh *worldMesh )
 {
 	DeserializeMaterials( root, worldMesh );
 
@@ -229,7 +231,7 @@ YNCoreWorldMesh *YnCore_WorldMesh_Load( const char *path )
 		return worldMesh;
 	}
 
-	NLNode *node = NL_LoadFile( path, "worldMesh" );
+	YNNodeBranch *node = YnNode_LoadFile( path, "worldMesh" );
 	if ( node == NULL )
 	{
 		PRINT_WARNING( "Failed to load world mesh: %s\n", path );
@@ -243,7 +245,7 @@ YNCoreWorldMesh *YnCore_WorldMesh_Load( const char *path )
 		worldMesh = NULL;
 	}
 
-	NL_DestroyNode( node );
+	YnNode_DestroyBranch( node );
 
 	// If it loaded fine, be sure we start tracking it
 	if ( worldMesh != NULL )

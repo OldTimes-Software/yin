@@ -3,14 +3,14 @@
 
 static unsigned char node_parser_test( const char *buf, size_t length )
 {
-	NLNode *root = NL_ParseBuffer( buf, strlen( buf ) );
+	YNNodeBranch *root = NL_ParseBuffer( buf, strlen( buf ) );
 	if ( root == NULL )
 	{
 		printf( "Failed to node from buffer!\n" );
 		return TEST_RETURN_FAILURE;
 	}
 
-	NLNode *v;
+	YNNodeBranch *v;
 	v = NL_GetChildByName( root, "exampleMember" );
 	if ( v == NULL )
 	{

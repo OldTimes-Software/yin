@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-// Copyright © 2020-2023 Mark E Sowden <hogsy@oldtimes-software.com>
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
+
+#include <yin/node.h>
 
 #include "fw_game.h"
 #include "menu/fw_menu.h"
@@ -31,34 +33,34 @@ static void FW_Game_NewGame( const char *path )
 
 static void FW_Game_SaveGame( const char *path )
 {
-	NLNode *root = NL_PushBackObj( NULL, "fwGameSave" );
+	YNNodeBranch *root = YnNode_PushBackObject( NULL, "fwGameSave" );
 
 	// Save entity data
-	YnCore_EntityManager_Save( NL_PushBackObj( root, "entityData" ) );
+	YnCore_EntityManager_Save( YnNode_PushBackObject( root, "entityData" ) );
 
-	if ( !NL_WriteFile( path, root, NL_FILE_BINARY ) )
+	if ( !YnNode_WriteFile( path, root, YN_NODE_FILE_BINARY ) )
 	{
-		Game_Warning( "Failed to write save (%s): %s\n", path, NL_GetErrorMessage() );
+		Game_Warning( "Failed to write save (%s): %s\n", path, YnNode_GetErrorMessage() );
 		return;
 	}
 
-	NL_DestroyNode( root );
+	YnNode_DestroyBranch( root );
 }
 
 static void FW_Game_RestoreGame( const char *path )
 {
-	NLNode *root = NL_LoadFile( path, "fwGameSave" );
+	YNNodeBranch *root = YnNode_LoadFile( path, "fwGameSave" );
 	if ( root == NULL )
 	{
-		Game_Warning( "Failed to load game save (%s): %s\n", path, NL_GetErrorMessage() );
+		Game_Warning( "Failed to load game save (%s): %s\n", path, YnNode_GetErrorMessage() );
 		return;
 	}
 
-	NLNode *entityNode = NL_GetChildByName( root, "entityData" );
+	YNNodeBranch *entityNode = YnNode_GetChildByName( root, "entityData" );
 	if ( entityNode != NULL )
 		YnCore_EntityManager_Restore( NULL );
 
-	NL_DestroyNode( entityNode );
+	YnNode_DestroyBranch( entityNode );
 }
 
 static void FW_Game_Precache( void )
@@ -83,11 +85,11 @@ static void FW_Game_DrawMenu( const YNCoreViewport *viewport )
 
 static void SpawnWorld( YNCoreWorld *world )
 {
-	NLNode *propertyNode;
+	YNNodeBranch *propertyNode;
 	if ( ( propertyNode = YnCore_World_GetProperty( world, "heightmap" ) ) != NULL )
 	{
 		PLPath path;
-		if ( NL_GetStr( propertyNode, path, sizeof( path ) ) == NL_ERROR_SUCCESS )
+		if ( YnNode_GetStr( propertyNode, path, sizeof( path ) ) == YN_NODE_ERROR_SUCCESS )
 		{
 
 		}
@@ -98,7 +100,7 @@ static void SpawnWorld( YNCoreWorld *world )
 		Game_Warning( "No heightmap provided for world (%s)!\n", YnCore_World_GetPath( world ) );
 
 	if ( ( propertyNode = YnCore_World_GetProperty( world, "waterLevel" ) ) != NULL )
-		NL_GetF32( propertyNode, &fwGameState.simState.waterHeight );
+		YnNode_GetF32( propertyNode, &fwGameState.simState.waterHeight );
 }
 
 static bool FW_Game_RequestHandler( GameModeRequest gameModeRequest, void *user )

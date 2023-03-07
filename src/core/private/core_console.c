@@ -3,6 +3,8 @@
 
 #include "core_private.h"
 
+#include <yin/node.h>
+
 #include "client/client_input.h"
 
 /****************************************
@@ -88,13 +90,12 @@ CMD_CALLBACK( Version )
 
 /*------------------------------------------------------------------*/
 
-#include "node/public/node.h"
 #include "core_filesystem.h"
 
 static void SaveUserConfig( void );
 static void LoadUserConfig( void )
 {
-	NLNode *root = NL_LoadFile( FileSystem_GetUserConfigLocation(), "config" );
+	YNNodeBranch *root = YnNode_LoadFile( FileSystem_GetUserConfigLocation(), "config" );
 	if ( root == NULL )
 	{
 		PRINT( "No existing user config, generating default.\n" );
@@ -103,17 +104,17 @@ static void LoadUserConfig( void )
 	}
 
 	/* now iterate through the list and update all our children */
-	NLNode *child = NL_GetFirstChild( root );
+	YNNodeBranch *child = YnNode_GetFirstChild( root );
 	while ( child != NULL )
 	{
-		const char *cvarName = NL_GetName( child );
+		const char *cvarName = YnNode_GetName( child );
 		char        cvarValue[ PL_SYSTEM_MAX_PATH ];
-		if ( NL_GetStr( child, cvarValue, sizeof( cvarValue ) ) == NL_ERROR_SUCCESS )
+		if ( YnNode_GetStr( child, cvarValue, sizeof( cvarValue ) ) == YN_NODE_ERROR_SUCCESS )
 			PlSetConsoleVariableByName( cvarName, cvarValue );
 		else
 			PRINT_WARNING( "Failed to fetch value: %s\n", cvarName );
 
-		child = NL_GetNextChild( child );
+		child = YnNode_GetNextChild( child );
 	}
 
 	Client_Input_DeserializeConfig( root );
@@ -131,7 +132,7 @@ static void SaveUserConfig( void )
 	size_t              numVars;
 	PlGetConsoleVariables( &cvars, &numVars );
 
-	NLNode *root = NL_PushBackObj( NULL, "config" );
+	YNNodeBranch *root = YnNode_PushBackObject( NULL, "config" );
 	for ( unsigned int i = 0; i < numVars; ++i )
 	{
 		/* don't bother storing it if it matches the default */
@@ -141,24 +142,24 @@ static void SaveUserConfig( void )
 		switch ( cvars[ i ]->type )
 		{
 			case PL_VAR_F32:
-				NL_PushBackF32( root, cvars[ i ]->name, cvars[ i ]->f_value );
+				YnNode_PushBackF32( root, cvars[ i ]->name, cvars[ i ]->f_value );
 				break;
 			case PL_VAR_I32:
-				NL_PushBackI32( root, cvars[ i ]->name, cvars[ i ]->i_value );
+				YnNode_PushBackI32( root, cvars[ i ]->name, cvars[ i ]->i_value );
 				break;
 			case PL_VAR_BOOL:
-				NL_PushBackBool( root, cvars[ i ]->name, cvars[ i ]->b_value );
+				YnNode_PushBackBool( root, cvars[ i ]->name, cvars[ i ]->b_value );
 				break;
 			default:
-				NL_PushBackStr( root, cvars[ i ]->name, cvars[ i ]->s_value );
+				YnNode_PushBackString( root, cvars[ i ]->name, cvars[ i ]->s_value );
 				break;
 		}
 	}
 
 	Client_Input_SerializeConfig( root );
 
-	NL_WriteFile( path, root, NL_FILE_UTF8 );
-	NL_DestroyNode( root );
+	YnNode_WriteFile( path, root, YN_NODE_FILE_UTF8 );
+	YnNode_DestroyBranch( root );
 
 	PRINT( "User config saved.\n" );
 }

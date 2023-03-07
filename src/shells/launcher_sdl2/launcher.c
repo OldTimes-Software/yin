@@ -9,12 +9,12 @@
 
 #include <yin/core.h>
 #include <yin/core_renderer.h>
+#include <yin/node.h>
 
 #include "common.h"
-#include "node.h"
 #include "launcher.h"
 
-static NLNode *shellConfig;
+static YNNodeBranch *shellConfig;
 
 void YnCore_ShellInterface_PushMessage( int level, const char *msg, const PLColour *colour )
 {
@@ -372,7 +372,7 @@ static bool InitializeDisplay( void )
 	}
 
 	unsigned int driverMode;
-	const char *driverName = NL_GetStrByName( shellConfig, "shell.driver", "opengl" );
+	const char *driverName = YnNode_GetStringByName( shellConfig, "shell.driver", "opengl" );
 	if ( strcmp( driverName, "opengl" ) == 0 )
 		driverMode = YN_CORE_GRAPHICS_OPENGL;
 	else if ( strcmp( driverName, "vulkan" ) == 0 )

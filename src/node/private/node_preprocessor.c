@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com> */
+// SPDX-License-Identifier: LGPL-3.0-or-later
+// Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <plcore/pl_parse.h>
 #include <plcore/pl_filesystem.h>
@@ -45,7 +45,7 @@ static bool IsMacroRegistered( const char *name )
 	return false;
 }
 
-char *xNL_PreProcessScript( char *buf, size_t *length, bool isHead )
+char *YnNode_PreProcessScript( char *buf, size_t *length, bool isHead )
 {
 	size_t actualLength = 0;
 	size_t maxLength = *length;
@@ -90,7 +90,7 @@ char *xNL_PreProcessScript( char *buf, size_t *length, bool isHead )
 					PlCloseFile( file );
 
 					/* now throw it into the pre-processor */
-					includeBody = xNL_PreProcessScript( includeBody, &includeLength, false );
+					includeBody = YnNode_PreProcessScript( includeBody, &includeLength, false );
 
 					/* and finally, push it into our destination */
 					dstPos = pl_strinsert( includeBody, &dstBuffer, &actualLength, &maxLength );

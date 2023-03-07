@@ -7,7 +7,7 @@
 #include "renderer_particle.h"
 #include "renderer.h"
 
-#include "node/public/node.h"
+#include <yin/node.h>
 
 void PS_Initialize( void )
 {
@@ -29,21 +29,21 @@ static void PS_CB_DestroyEmitterTemplate( void *userData )
 	PlFree( emitter );
 }
 
-NLNode *PS_SerializeEmitter( const PSEmitter *emitter )
+YNNodeBranch *PS_SerializeEmitter( const PSEmitter *emitter )
 {
-	NLNode *root = NL_PushBackObj( NULL, "particleEmitter" );
+	YNNodeBranch *root = YnNode_PushBackObject( NULL, "particleEmitter" );
 	if ( root != NULL )
 	{
-		NL_PushBackI32( root, "emissionRate", emitter->emissionRate );
-		NL_PushBackI32( root, "emissionVar", emitter->emissionVar );
+		YnNode_PushBackI32( root, "emissionRate", emitter->emissionRate );
+		YnNode_PushBackI32( root, "emissionVar", emitter->emissionVar );
 
-		NL_PushBackI32( root, "particleLife", emitter->particleLife );
-		NL_PushBackI32( root, "particleLifeVar", emitter->particleLifeVar );
+		YnNode_PushBackI32( root, "particleLife", emitter->particleLife );
+		YnNode_PushBackI32( root, "particleLifeVar", emitter->particleLifeVar );
 
-		NL_PushBackF32( root, "speed", emitter->speed );
-		NL_PushBackF32( root, "speedVar", emitter->speedVar );
+		YnNode_PushBackF32( root, "speed", emitter->speed );
+		YnNode_PushBackF32( root, "speedVar", emitter->speedVar );
 
-		NL_PushBackI32( root, "maxParticles", emitter->maxParticles );
+		YnNode_PushBackI32( root, "maxParticles", emitter->maxParticles );
 	}
 
 	return root;
@@ -55,7 +55,7 @@ void PS_CacheEmitterTemplate( const char *path )
 	if ( emitter != NULL )
 		return;
 
-	NLNode *root = NL_LoadFile( path, "particleEmitter" );
+	YNNodeBranch *root = YnNode_LoadFile( path, "particleEmitter" );
 	if ( root == NULL )
 	{
 		PRINT_WARNING( "Failed to load particle emitter template: %s\n" );
@@ -67,19 +67,19 @@ void PS_CacheEmitterTemplate( const char *path )
 	SG_DS_Transform( root, "transform", &emitter->transform );
 	SG_DS_Transform( root, "transformVar", &emitter->transformVar );
 
-	emitter->emissionRate = NL_GetI32ByName( root, "emissionRate", 2 );
-	emitter->emissionVar = NL_GetI32ByName( root, "emissionVar", 2 );
+	emitter->emissionRate = YnNode_GetI32ByName( root, "emissionRate", 2 );
+	emitter->emissionVar = YnNode_GetI32ByName( root, "emissionVar", 2 );
 
-	emitter->particleLife = NL_GetI32ByName( root, "particleLife", 10 );
-	emitter->particleLifeVar = NL_GetI32ByName( root, "particleLifeVar", 5 );
-	emitter->maxParticles = NL_GetI32ByName( root, "maxParticles", 100 );
+	emitter->particleLife = YnNode_GetI32ByName( root, "particleLife", 10 );
+	emitter->particleLifeVar = YnNode_GetI32ByName( root, "particleLifeVar", 5 );
+	emitter->maxParticles = YnNode_GetI32ByName( root, "maxParticles", 100 );
 
-	emitter->life = NL_GetI32ByName( root, "life", 0 );
+	emitter->life = YnNode_GetI32ByName( root, "life", 0 );
 
-	NL_DS_DeserializeColourF32( NL_GetChildByName( root, "startColour" ), &emitter->startColour );
-	NL_DS_DeserializeColourF32( NL_GetChildByName( root, "endColour" ), &emitter->endColour );
-	NL_DS_DeserializeColourF32( NL_GetChildByName( root, "startColourVar" ), &emitter->startColourVar );
-	NL_DS_DeserializeColourF32( NL_GetChildByName( root, "endColourVar" ), &emitter->endColourVar );
+	YnNode_DS_DeserializeColourF32( YnNode_GetChildByName( root, "startColour" ), &emitter->startColour );
+	YnNode_DS_DeserializeColourF32( YnNode_GetChildByName( root, "endColour" ), &emitter->endColour );
+	YnNode_DS_DeserializeColourF32( YnNode_GetChildByName( root, "startColourVar" ), &emitter->startColourVar );
+	YnNode_DS_DeserializeColourF32( YnNode_GetChildByName( root, "endColourVar" ), &emitter->endColourVar );
 
 	MM_AddToCache( path, MEM_CACHE_PARTICLES, emitter );
 

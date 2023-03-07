@@ -2,18 +2,15 @@
 // Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include <plcore/pl_filesystem.h>
-
-#include <plgraphics/plg.h>
 #include <plgraphics/plg_mesh.h>
 
 #include "core_private.h"
 #include "world.h"
 #include "legacy/actor.h"
 
-#include "node/public/node.h"
+#include <yin/node.h>
 
 #include "client/renderer/renderer.h"
-#include "client/renderer/renderer_material.h"
 
 void YnCore_World_SetupGlobalDefaults( YNCoreWorld *world )
 {
@@ -27,9 +24,9 @@ YNCoreWorld *YnCore_World_Create( void )
 {
 	YNCoreWorld *world = PlMAllocA( sizeof( YNCoreWorld ) );
 
-	world->globalProperties = NL_PushBackObj( NULL, "properties" );
-	NL_PushBackF32Array( world->globalProperties, "ambience", ( const float * ) &WORLD_DEFAULT_AMBIENCE, 4 );
-	NL_PushBackF32Array( world->globalProperties, "clearColour", ( const float * ) &WORLD_DEFAULT_CLEARCOLOUR, 4 );
+	world->globalProperties = YnNode_PushBackObject( NULL, "properties" );
+	YnNode_PushBackF32Array( world->globalProperties, "ambience", ( const float * ) &WORLD_DEFAULT_AMBIENCE, 4 );
+	YnNode_PushBackF32Array( world->globalProperties, "clearColour", ( const float * ) &WORLD_DEFAULT_CLEARCOLOUR, 4 );
 	//NL_PushBackStrArray( world->globalProperties, "skyMaterials", ( const char ** ) WORLD_DEFAULT_SKY, 1 );
 
 	world->meshes   = PlCreateVectorArray( 0 );
@@ -40,7 +37,7 @@ YNCoreWorld *YnCore_World_Create( void )
 
 YNCoreWorld *YnCore_World_Load( const char *path )
 {
-	NLNode *node = NL_LoadFile( path, "world" );
+	YNNodeBranch *node = YnNode_LoadFile( path, "world" );
 	if ( node == NULL )
 	{
 		PRINT_WARNING( "Failed to load world: %s\n", path );
@@ -55,7 +52,7 @@ YNCoreWorld *YnCore_World_Load( const char *path )
 		world = NULL;
 	}
 
-	NL_DestroyNode( node );
+	YnNode_DestroyBranch( node );
 
 	return world;
 }
@@ -64,14 +61,14 @@ bool YnCore_World_Save( YNCoreWorld *world, const char *path )
 {
 	world->lastSaveTime = time( NULL );
 
-	NLNode *root = NL_PushBackObj( NULL, "world" );
+	YNNodeBranch *root = YnNode_PushBackObject( NULL, "world" );
 
 	YnCore_WorldSerialiser_Begin( world, root );
 	snprintf( world->path, sizeof( world->path ), "%s", path );
 
-	if ( !NL_WriteFile( path, root, NL_FILE_BINARY ) )
+	if ( !YnNode_WriteFile( path, root, YN_NODE_FILE_BINARY ) )
 	{
-		PRINT_WARNING( "Failed to save world (%s): %s\n", path, NL_GetErrorMessage() );
+		PRINT_WARNING( "Failed to save world (%s): %s\n", path, YnNode_GetErrorMessage() );
 		return false;
 	}
 
@@ -151,12 +148,12 @@ void YnCore_World_SpawnEntities( YNCoreWorld *world )
  * Global World Properties
  ****************************************/
 
-NLNode *YnCore_World_GetProperty( YNCoreWorld *world, const char *propertyName )
+YNNodeBranch *YnCore_World_GetProperty( YNCoreWorld *world, const char *propertyName )
 {
 	if ( world->globalProperties == NULL )
 		return NULL;
 
-	return NL_GetChildByName( world->globalProperties, propertyName );
+	return YnNode_GetChildByName( world->globalProperties, propertyName );
 }
 
 PLColourF32 YnCore_World_GetAmbience( YNCoreWorld *world ) { return world->ambience; }

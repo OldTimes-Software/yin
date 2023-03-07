@@ -40,7 +40,7 @@ typedef struct YNCoreEntityComponentBase
 typedef struct YNCoreEntityPrefabComponent
 {
 	const YNCoreEntityComponentBase *base;
-	NLNode *properties;
+	YNNodeBranch *properties;
 } YNCoreEntityPrefabComponent;
 
 /**

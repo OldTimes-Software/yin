@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // Copyright © 2020-2023 OldTimes Software, Mark E Sowden <hogsy@oldtimes-software.com>
 
+#include <yin/node.h>
+
 #include "game_private.h"
 #include "game_component_transform.h"
 
@@ -9,31 +11,31 @@ static void Spawn( YNCoreEntityComponent *self )
 	self->userData = PL_NEW( ECTransform );
 }
 
-static NLNode *Serialize( YNCoreEntityComponent *self, NLNode *root )
+static YNNodeBranch *Serialize( YNCoreEntityComponent *self, YNNodeBranch *root )
 {
-	NL_PushBackF32Array( root, "translation", ( float * ) &ECTRANSFORM( self )->translation, 3 );
-	NL_PushBackF32Array( root, "scale", ( float * ) &ECTRANSFORM( self )->scale, 3 );
-	NL_PushBackF32Array( root, "angles", ( float * ) &ECTRANSFORM( self )->angles, 3 );
-	NL_PushBackI32( root, "sectorNum", ECTRANSFORM( self )->sectorNum );
+	YnNode_PushBackF32Array( root, "translation", ( float * ) &ECTRANSFORM( self )->translation, 3 );
+	YnNode_PushBackF32Array( root, "scale", ( float * ) &ECTRANSFORM( self )->scale, 3 );
+	YnNode_PushBackF32Array( root, "angles", ( float * ) &ECTRANSFORM( self )->angles, 3 );
+	YnNode_PushBackI32( root, "sectorNum", ECTRANSFORM( self )->sectorNum );
 	return root;
 }
 
-static NLNode *Deserialize( YNCoreEntityComponent *self, NLNode *root )
+static YNNodeBranch *Deserialize( YNCoreEntityComponent *self, YNNodeBranch *root )
 {
-	NLNode *child;
-	if ( ( child = NL_GetChildByName( root, "translation" ) ) != NULL )
+	YNNodeBranch *child;
+	if ( ( child = YnNode_GetChildByName( root, "translation" ) ) != NULL )
 	{
-		NL_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->translation, 3 );
+		YnNode_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->translation, 3 );
 	}
-	if ( ( child = NL_GetChildByName( root, "scale" ) ) != NULL )
+	if ( ( child = YnNode_GetChildByName( root, "scale" ) ) != NULL )
 	{
-		NL_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->scale, 3 );
+		YnNode_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->scale, 3 );
 	}
-	if ( ( child = NL_GetChildByName( root, "angles" ) ) != NULL )
+	if ( ( child = YnNode_GetChildByName( root, "angles" ) ) != NULL )
 	{
-		NL_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->angles, 3 );
+		YnNode_GetF32Array( child, ( float * ) &ECTRANSFORM( self )->angles, 3 );
 	}
-	ECTRANSFORM( self )->sectorNum = NL_GetI32ByName( root, "sectorNum", -1 );
+	ECTRANSFORM( self )->sectorNum = YnNode_GetI32ByName( root, "sectorNum", -1 );
 	return root;
 }
 

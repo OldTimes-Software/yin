@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "node/public/node.h"
+typedef struct YNNodeBranch YNNodeBranch;
 
 enum SGNodeType
 {
@@ -34,7 +34,7 @@ typedef struct SGNode SGNode;
  * Serialisation/Deserialisation
  * ====================================================================*/
 
-SGTransform *SG_DS_Transform( NLNode *root, const char *childName, SGTransform *out );
+SGTransform *SG_DS_Transform( YNNodeBranch *root, const char *childName, SGTransform *out );
 
 /* ======================================================================
  * ====================================================================*/

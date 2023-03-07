@@ -39,7 +39,7 @@ YNCoreWorld *YnCore_World_Load( const char *path );
 bool YnCore_World_Save( YNCoreWorld *world, const char *path );
 
 void YnCore_World_Destroy( YNCoreWorld *world );
-struct NLNode *YnCore_World_GetProperty( YNCoreWorld *world, const char *propertyName );
+struct YNNodeBranch *YnCore_World_GetProperty( YNCoreWorld *world, const char *propertyName );
 PLColourF32 YnCore_World_GetAmbience( YNCoreWorld *world );
 PLColourF32 YnCore_World_GetSunColour( YNCoreWorld *world );
 PLVector3 YnCore_World_GetSunPosition( YNCoreWorld *world );

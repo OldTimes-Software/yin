@@ -4,6 +4,7 @@
 #include "game_interface.h"
 #include "world.h"
 
+#include <yin/node.h>
 #include <yin/core_game.h>
 
 #include "legacy/actor.h"
@@ -125,11 +126,11 @@ void Game_Disconnect( void )
 
 void Game_SetupWorldProperties( YNCoreWorld *world )
 {
-	NLNode *prop;
+	YNNodeBranch *prop;
 	if ( ( prop = YnCore_World_GetProperty( world, "music" ) ) != NULL )
 	{
 		PLPath musicPath;
-		if ( NL_GetStr( prop, musicPath, sizeof( PLPath ) ) == NL_ERROR_SUCCESS )
+		if ( YnNode_GetStr( prop, musicPath, sizeof( PLPath ) ) == YN_NODE_ERROR_SUCCESS )
 		{
 		}
 	}

@@ -35,7 +35,7 @@ PL_EXTERN_C
 	PL_TOSTRING( VERSION_MAJOR ) \
 	"." PL_TOSTRING( VERSION_MINOR ) "." PL_TOSTRING( VERSION_PATCH ) " (" VERSION_CODENAME ")"
 
-struct NLNode *YnCore_GetConfig( void );
+struct YNNodeBranch *YnCore_GetConfig( void );
 
 #if !defined( NDEBUG )
 #	define ENABLE_PROFILER 1
