@@ -29,19 +29,13 @@ os::editor::MainWindow::MainWindow( FXApp *app )
 	menuBar_ = new FXMenuBar( this, LAYOUT_SIDE_TOP | LAYOUT_FILL_X );
 
 	FXMenuPane *menuPane = new FXMenuPane( menuBar_->getParent() );
-	new FXMenuCommand( menuPane, "&New Project\t\tCreate a new project.", nullptr, this, ID_PROJECT_NEW );
-	new FXMenuCommand( menuPane, "&Open Project\t\tOpen an existing project.", nullptr, this, ID_PROJECT_OPEN );
-	new FXMenuCommand( menuPane, "&Save Project\t\tSave the project.", nullptr, this, ID_PROJECT_SAVE );
-	new FXMenuCommand( menuPane, "Save Project &As...\t\tSave the project to the specified destination.", nullptr, this, ID_PROJECT_SAVEAS );
-	new FXMenuCommand( menuPane, "Close Project\t\tClose the current project.", nullptr, this, ID_PROJECT_CLOSE );
-	new FXMenuSeparator( menuPane );
-	new FXMenuCommand( menuPane, "Package Project\t\tPackage the current project.", nullptr, this, ID_PROJECT_PACKAGE );
-	new FXMenuSeparator( menuPane );
 	new FXMenuCommand( menuPane, "New World\t\tCreate a new world.", nullptr, this, ID_WORLD_NEW );
 	new FXMenuCommand( menuPane, "Open World\t\tOpen an existing world.", nullptr, this, ID_WORLD_OPEN );
 	new FXMenuCommand( menuPane, "Save World\t\tSave the world.", nullptr, this, ID_WORLD_SAVE );
 	new FXMenuCommand( menuPane, "Save World As...\t\tSave the world to the specified destination.", nullptr, this, ID_WORLD_SAVEAS );
 	new FXMenuCommand( menuPane, "Close World\t\tClose the current world.", nullptr, this, ID_WORLD_CLOSE );
+	new FXMenuSeparator( menuPane );
+	new FXMenuCommand( menuPane, "Package Project\t\tPackage the current project.", nullptr, this, ID_PROJECT_PACKAGE );
 	new FXMenuSeparator( menuPane );
 	new FXMenuCommand( menuPane, "Settings\t\tConfigure editor settings and more.", nullptr, this );
 	new FXMenuSeparator( menuPane );
@@ -63,13 +57,13 @@ os::editor::MainWindow::MainWindow( FXApp *app )
 
 #if 1
 	toolBar_ = new FXToolBar( this, FRAME_RAISED | FRAME_THICK | LAYOUT_FILL_X );
-	editModeButtons[ EDITOR_GEOMETRYMODE_BRUSH ]  = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "icons/brush_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
-	editModeButtons[ EDITOR_GEOMETRYMODE_VERTEX ] = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "icons/vertex_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
-	editModeButtons[ EDITOR_GEOMETRYMODE_EDGE ]   = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "icons/edge_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
-	editModeButtons[ EDITOR_GEOMETRYMODE_FACE ]   = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "icons/face_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
+	editModeButtons[ EDITOR_GEOMETRYMODE_BRUSH ]  = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "resources/brush_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
+	editModeButtons[ EDITOR_GEOMETRYMODE_VERTEX ] = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "resources/vertex_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
+	editModeButtons[ EDITOR_GEOMETRYMODE_EDGE ]   = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "resources/edge_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
+	editModeButtons[ EDITOR_GEOMETRYMODE_FACE ]   = new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "resources/face_mode.gif" ), 0, this, MainWindow::ID_TOGGLE_EDIT, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
 	//editModeButtons[ currentEditMode ]->setState( true );
 	new FXVerticalSeparator( toolBar_ );
-	new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "icons/grid.gif" ), 0, &gridSizeTarget, FXDataTarget::ID_VALUE, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
+	new FXToggleButton( toolBar_, "", "", os::editor::LoadFXIcon( getApp(), "resources/grid.gif" ), 0, &gridSizeTarget, FXDataTarget::ID_VALUE, TOGGLEBUTTON_KEEPSTATE | TOGGLEBUTTON_NORMAL );
 	new FXTextField( toolBar_, 4, &gridSizeTarget, FXDataTarget::ID_VALUE, TEXTFIELD_LIMITED | TEXTFIELD_INTEGER | FRAME_NORMAL );
 	new FXVerticalSeparator( toolBar_ );
 	new FXButton( toolBar_, "", os::editor::LoadFXIcon( getApp(), "resources/play.gif" ) );
@@ -87,15 +81,15 @@ os::editor::MainWindow::MainWindow( FXApp *app )
 
 	FXSplitter *hs = new FXSplitter( vs, LAYOUT_MIN_WIDTH | LAYOUT_SIDE_TOP | LAYOUT_FILL | SPLITTER_HORIZONTAL );
 	new FXTabBook( new FXVerticalFrame( hs, LAYOUT_SIDE_TOP | LAYOUT_FILL_Y ) );
-	viewportFrame = new EditorViewportFrame( hs, glVisual_, ( YRCameraMode ) YR_CAMERA_MODE_PERSPECTIVE );
+	viewportFrame = new EditorViewportFrame( hs, glVisual_, ( YNCoreCameraMode ) YN_CORE_CAMERA_MODE_PERSPECTIVE );
 	viewportFrame->setHeight( 768 );
 
 	// Add the console at the bottom
 	consoleFrame = new os::editor::ConsoleFrame( vs );
 
-	mainFrame->hide();
+	//mainFrame->hide();
 
-	getApp()->addTimeout( this, MainWindow::ID_TICK, TICK_RATE );
+	getApp()->addTimeout( this, MainWindow::ID_TICK, YN_CORE_TICK_RATE );
 }
 
 void os::editor::MainWindow::create()
@@ -108,9 +102,9 @@ void os::editor::MainWindow::create()
 
 long os::editor::MainWindow::OnTick( FXObject *, FXSelector, void * )
 {
-	Engine_TickFrame();
+	YnCore_TickFrame();
 
-	getApp()->addTimeout( this, MainWindow::ID_TICK, TICK_RATE );
+	getApp()->addTimeout( this, MainWindow::ID_TICK, YN_CORE_TICK_RATE );
 	return 0;
 }
 

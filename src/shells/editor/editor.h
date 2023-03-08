@@ -12,9 +12,11 @@
 #include <plcore/pl_hashtable.h>
 #include <plcore/pl_linkedlist.h>
 
-// Yin
 #include "common.h"
-#include "node.h"
+
+// Yin
+#include <yin/core.h>
+#include <yin/node.h>
 
 // FOX Toolkit
 #include <fx.h>

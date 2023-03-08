@@ -26,11 +26,11 @@ YNNodeBranch *os::editor::editorConfig;
 
 static void GenerateProjectConfig( const char *name, const char *path )
 {
-	YNNodeBranch *root = NL_PushBackObj( nullptr, "config" );
-	NL_PushBackStr( root, "title", name );
+	YNNodeBranch *root = YnNode_PushBackObject( nullptr, "config" );
+	YnNode_PushBackString( root, "title", name );
 	const static constexpr int version[ 3 ] = { 0, 0, 0 };
-	NL_PushBackI32Array( root, "version", version, 3 );
-	YnNode_WriteFile( path, root, NL_FILE_UTF8 );
+	YnNode_PushBackI32Array( root, "version", version, 3 );
+	YnNode_WriteFile( path, root, YN_NODE_FILE_UTF8 );
 	YnNode_DestroyBranch( root );
 }
 
@@ -158,12 +158,12 @@ static void SetupConfig()
 		if ( ( os::editor::editorConfig = YnNode_LoadFile( path, "config" ) ) == nullptr )
 		{
 			// uh oh! just append an object and return
-			os::editor::editorConfig = NL_PushBackObj( nullptr, "config" );
+			os::editor::editorConfig = YnNode_PushBackObject( nullptr, "config" );
 			return;
 		}
 	}
 
-	snprintf( os::editor::cachedPaths[ os::editor::PATH_PROJECTS ], sizeof( PLPath ), "%s", NL_GetStrByName( os::editor::editorConfig, "projectsPath", "../../projects" ) );
+	snprintf( os::editor::cachedPaths[ os::editor::PATH_PROJECTS ], sizeof( PLPath ), "%s", YnNode_GetStringByName( os::editor::editorConfig, "projectsPath", "../../projects" ) );
 }
 
 FXIcon *os::editor::LoadFXIcon( FXApp *app, const char *path )
@@ -232,32 +232,29 @@ int main( int argc, char **argv )
 		return EXIT_FAILURE;
 	}
 
-	if ( !Engine_Initialize( NULL ) )
+	if ( !YnCore_Initialize( "editor.cfg.n" ) )
 	{
 		FXMessageBox::warning( FXApp::instance(), 0, "Error", "Failed to initialize Yin!" );
 		return EXIT_FAILURE;
 	}
-
-	//PlParseConsoleString( "editor" );
-	//PlParseConsoleString( "world test" );
 
 	return app.run();
 }
 
 extern "C"
 {
-	YRViewport *YnCore_ShellInterface_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
+	YNCoreViewport *YnCore_ShellInterface_CreateWindow( const char *title, int width, int height, bool fullscreen, uint8_t mode )
 	{
 		return nullptr;
 	}
 
 	void YnCore_ShellInterface_GetWindowSize( int *width, int *height ) {}
-	void YnCore_ShellInterface_DisplayMessageBox( OSMessageType messageType, const char *message, ... )
+	void YnCore_ShellInterface_DisplayMessageBox( YNCoreMessageType messageType, const char *message, ... )
 	{
 	}
 
-	OSInputState YnCore_ShellInterface_GetButtonState( YNCoreInputButton inputButton ) { return INPUT_STATE_NONE; }
-	OSInputState YnCore_ShellInterface_GetKeyState( int key ) { return INPUT_STATE_NONE; }
+	YNCoreInputState YnCore_ShellInterface_GetButtonState( YNCoreInputButton inputButton ) { return YN_CORE_INPUT_STATE_NONE; }
+	YNCoreInputState YnCore_ShellInterface_GetKeyState( int key ) { return YN_CORE_INPUT_STATE_NONE; }
 	void YnCore_ShellInterface_GetMousePosition( int *x, int *y ) {}
 	void YnCore_ShellInterface_SetMousePosition( int x, int y ) {}
 	void YnCore_ShellInterface_GrabMouse( bool grab ) {}

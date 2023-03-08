@@ -15,7 +15,7 @@ bool FW_Terrain_Load( const char *path );
 
 float FW_Terrain_GetHeight( float x, float y );
 float FW_Terrain_GetMaxHeight( void );
-float FW_Terrain_GetMinheight( void );
+float FW_Terrain_GetMinHeight( void );
 
 void FW_Terrain_Draw( void );
 

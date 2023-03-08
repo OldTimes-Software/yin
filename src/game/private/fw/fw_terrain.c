@@ -21,7 +21,7 @@ static unsigned char terrainMinHeight, terrainMaxHeight;
 #define TERRAIN_MESH_NUM_VERTS ( TERRAIN_MESH_VERTS_X * TERRAIN_MESH_VERTS_Y )
 
 static YNCoreMaterial *terrainMaterial = NULL;
-static PLGMesh *terrainMesh      = NULL;
+static PLGMesh *terrainMesh            = NULL;
 static PLGVertex vertices[ TERRAIN_MESH_NUM_VERTS ];
 
 static PLGMesh *GenerateTerrainMesh( void )
@@ -119,4 +119,19 @@ bool FW_Terrain_Load( const char *path )
 	PlCloseFile( file );
 
 	return status;
+}
+
+float FW_Terrain_GetHeight( float x, float y )
+{
+	return 0;
+}
+
+float FW_Terrain_GetMaxHeight( void )
+{
+	return terrainMaxHeight;
+}
+
+float FW_Terrain_GetMinHeight( void )
+{
+	return terrainMinHeight;
 }

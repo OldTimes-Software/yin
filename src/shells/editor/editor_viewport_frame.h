@@ -10,7 +10,7 @@ class EditorViewportFrame : public FXVerticalFrame
 	FXDECLARE( EditorViewportFrame )
 
 public:
-	EditorViewportFrame( FXComposite *composite, FXGLVisual *visual, YRCameraMode viewMode );
+	EditorViewportFrame( FXComposite *composite, FXGLVisual *visual, YNCoreCameraMode viewMode );
 	virtual ~EditorViewportFrame();
 
 	void create() override;
@@ -32,20 +32,20 @@ public:
 private:
 	inline EditorViewportFrame() = default;
 
-	FXToolBar   *toolBar_;
-	FXGLCanvas  *canvas_;
-	FXGLVisual  *visual_;
+	FXToolBar *toolBar_;
+	FXGLCanvas *canvas_;
+	FXGLVisual *visual_;
 	FXGLContext *context_;
 
-	FXToggleButton *viewModeButtons_[ YR_CAMERA_MAX_MODES ];
-	FXToggleButton *drawModeButtons_[ YR_CAMERA_MAX_DRAW_MODES ];
+	FXToggleButton *viewModeButtons_[ YN_CORE_CAMERA_MAX_MODES ];
+	FXToggleButton *drawModeButtons_[ YN_CORE_CAMERA_MAX_DRAW_MODES ];
 
-	YRCameraDrawMode drawMode_{ YR_CAMERA_DRAW_MODE_WIREFRAME };
+	YNCoreCameraDrawMode drawMode_{ YN_CORE_CAMERA_DRAW_MODE_WIREFRAME };
 
 	float zoomScale_{ 1.0f };
 
 public:
-	YRViewport *engineViewportHandle;
+	YNCoreViewport *engineViewportHandle;
 
 private:
 	FXDataTarget forwardSpeedTarget_;

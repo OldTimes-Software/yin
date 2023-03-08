@@ -2,7 +2,8 @@
 // Copyright © 2020-2022 Mark E Sowden <hogsy@oldtimes-software.com>
 
 #include "editor_viewport_frame.h"
-#include "core_renderer.h"
+
+#include <yin/core_renderer.h>
 
 #include <plgraphics/plg.h>
 #include <plgraphics/plg_camera.h>
@@ -20,18 +21,18 @@ editorViewportMap[] = {
 
 FXIMPLEMENT( EditorViewportFrame, FXVerticalFrame, editorViewportMap, ARRAYNUMBER( editorViewportMap ) )
 
-EditorViewportFrame::EditorViewportFrame( FXComposite *composite, FXGLVisual *visual, YRCameraMode viewMode )
+EditorViewportFrame::EditorViewportFrame( FXComposite *composite, FXGLVisual *visual, YNCoreCameraMode viewMode )
     : FXVerticalFrame( composite, FRAME_NORMAL | LAYOUT_FILL | LAYOUT_TOP | LAYOUT_LEFT,
                        0, 0, 0, 0, 0, 0, 0, 0, 0, 0 )
 {
-	engineViewportHandle = YinCore_Viewport_Create( 0, 0, 800, 600, this );
+	engineViewportHandle = YnCore_Viewport_Create( 0, 0, 800, 600, this );
 
 	//engineViewportHandle.viewMode = viewMode;
 	//engineViewportHandle.drawMode = ( viewMode == YR_CAMERA_MODE_PERSPECTIVE ) ? YR_CAMERA_DRAW_MODE_TEXTURED : YR_CAMERA_DRAW_MODE_WIREFRAME;
 
 #if 1
 	toolBar_ = new FXToolBar( this, FRAME_RAISED | LAYOUT_DOCK_SAME | LAYOUT_SIDE_TOP | LAYOUT_FILL_X );
-	new FXButton( toolBar_, FXString::null, os::editor::LoadFXIcon( getApp(), "resources/eye.gif" ) );
+	new FXButton( toolBar_, FXString::null, os::editor::LoadFXIcon( getApp(), "resources/perspective.gif" ) );
 	new FXButton( toolBar_, FXString::null, os::editor::LoadFXIcon( getApp(), "resources/top.gif" ) );
 	new FXButton( toolBar_, FXString::null, os::editor::LoadFXIcon( getApp(), "resources/left.gif" ) );
 	new FXButton( toolBar_, FXString::null, os::editor::LoadFXIcon( getApp(), "resources/front.gif" ) );
@@ -62,7 +63,7 @@ EditorViewportFrame::~EditorViewportFrame()
 {
 	getApp()->removeChore( this, ID_CHORE );
 
-	YinCore_Viewport_Destroy( engineViewportHandle );
+	YnCore_Viewport_Destroy( engineViewportHandle );
 
 	canvas_->makeNonCurrent();
 	delete canvas_;
@@ -92,10 +93,10 @@ void EditorViewportFrame::Draw()
 
 	PlgSetViewport( 0, 0, w, h );
 
-	if ( YinCore_IsEngineRunning() )
+	if ( YnCore_IsEngineRunning() )
 	{
-		YinCore_Viewport_SetSize( engineViewportHandle, w, h );
-		YinCore_RenderFrame( engineViewportHandle );
+		YnCore_Viewport_SetSize( engineViewportHandle, w, h );
+		YnCore_RenderFrame( engineViewportHandle );
 	}
 	else
 	{
@@ -121,7 +122,7 @@ long EditorViewportFrame::OnMotion( FXObject *, FXSelector, void *ptr )
 	int const x = event->win_x;
 	int const y = event->win_y;
 
-	YinCore_HandleMouseMotionEvent( x, y );
+	YnCore_HandleMouseMotionEvent( x, y );
 
 	return 0;
 }
