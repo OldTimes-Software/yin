@@ -559,10 +559,10 @@ void YnCore_Draw2DQuad( YNCoreMaterial *material, int x, int y, int w, int h )
 
 	PlgClearMesh( mesh );
 
-	PlgAddMeshVertex( mesh, PlVector3( x, y + h, 0 ), pl_vecOrigin3, PL_COLOUR_WHITE, PlVector2( 0, 0 ) );
-	PlgAddMeshVertex( mesh, PlVector3( x, y, 0 ), pl_vecOrigin3, PL_COLOUR_WHITE, PlVector2( 0, 1 ) );
-	PlgAddMeshVertex( mesh, PlVector3( x + w, y + h, 0 ), pl_vecOrigin3, PL_COLOUR_WHITE, PlVector2( 1, 0 ) );
-	PlgAddMeshVertex( mesh, PlVector3( x + w, y, 0 ), pl_vecOrigin3, PL_COLOUR_WHITE, PlVector2( 1, 1 ) );
+	PlgAddMeshVertex( mesh, &PlVector3( x, y + h, 0 ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &PlVector2( 0, 0 ) );
+	PlgAddMeshVertex( mesh, &PlVector3( x, y, 0 ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &PlVector2( 0, 1 ) );
+	PlgAddMeshVertex( mesh, &PlVector3( x + w, y + h, 0 ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &PlVector2( 1, 0 ) );
+	PlgAddMeshVertex( mesh, &PlVector3( x + w, y, 0 ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &PlVector2( 1, 1 ) );
 
 	YnCore_Material_DrawMesh( material, mesh, NULL, 0 );
 }

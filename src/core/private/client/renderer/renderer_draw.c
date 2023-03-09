@@ -20,10 +20,10 @@ void Renderer_Draw_TexturedSubRect2D( PLGMesh *mesh, const PLQuad *subRect, PLGT
 	float tw, th, tx, ty;
 	GetUVCoordsForSubRect( subRect, texture, &tw, &th, &tx, &ty );
 
-	unsigned int vX = PlgAddMeshVertex( mesh, PLVector3( x, y, 0 ), pl_vecOrigin3, PLColourRGB( 255, 255, 255 ), PLVector2( tx, ty ) );
-	unsigned int vY = PlgAddMeshVertex( mesh, PLVector3( x, y + h, 0 ), pl_vecOrigin3, PLColourRGB( 255, 255, 255 ), PLVector2( tx, ty + th ) );
-	unsigned int vZ = PlgAddMeshVertex( mesh, PLVector3( x + w, y, 0 ), pl_vecOrigin3, PLColourRGB( 255, 255, 255 ), PLVector2( tx + tw, ty ) );
-	unsigned int vW = PlgAddMeshVertex( mesh, PLVector3( x + w, y + h, 0 ), pl_vecOrigin3, PLColourRGB( 255, 255, 255 ), PLVector2( tx + tw, ty + th ) );
+	unsigned int vX = PlgAddMeshVertex( mesh, &PLVector3( x, y, 0 ), &pl_vecOrigin3, &PLColourRGB( 255, 255, 255 ), &PLVector2( tx, ty ) );
+	unsigned int vY = PlgAddMeshVertex( mesh, &PLVector3( x, y + h, 0 ), &pl_vecOrigin3, &PLColourRGB( 255, 255, 255 ), &PLVector2( tx, ty + th ) );
+	unsigned int vZ = PlgAddMeshVertex( mesh, &PLVector3( x + w, y, 0 ), &pl_vecOrigin3, &PLColourRGB( 255, 255, 255 ), &PLVector2( tx + tw, ty ) );
+	unsigned int vW = PlgAddMeshVertex( mesh, &PLVector3( x + w, y + h, 0 ), &pl_vecOrigin3, &PLColourRGB( 255, 255, 255 ), &PLVector2( tx + tw, ty + th ) );
 
 	PlgAddMeshTriangle( mesh, vX, vY, vZ );
 	PlgAddMeshTriangle( mesh, vZ, vY, vW );

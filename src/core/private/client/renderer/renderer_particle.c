@@ -279,8 +279,8 @@ void PS_Draw( const PSEmitter *emitter, const YNCoreCamera *camera )
 
 		PLColour colour = PlColourF32ToU8( &particle->colour );
 
-		unsigned int a = PlgAddMeshVertex( emitter->mesh, PLVector3( x - particle->scale, y - particle->scale, z - particle->scale ), pl_vecOrigin3, colour, PLVector2( 0.0f, 0.0f ) );
-		unsigned int b = PlgAddMeshVertex( emitter->mesh, PLVector3( x - particle->scale, y - particle->scale, z + particle->scale ), pl_vecOrigin3, colour, PLVector2( 0.0f, 1.0f ) );
+		unsigned int a = PlgAddMeshVertex( emitter->mesh, &PLVector3( x - particle->scale, y - particle->scale, z - particle->scale ), &pl_vecOrigin3, &colour, &PLVector2( 0.0f, 0.0f ) );
+		unsigned int b = PlgAddMeshVertex( emitter->mesh, &PLVector3( x - particle->scale, y - particle->scale, z + particle->scale ), &pl_vecOrigin3, &colour, &PLVector2( 0.0f, 1.0f ) );
 		//unsigned int c = PlgAddMeshVertex( emitter->mesh, PLVector3( x + particle->scale, y - particle->scale, z - particle->scale ), pl_vecOrigin3, colour, PLVector2( 1.0f, 0.0f ) );
 		//unsigned int d = PlgAddMeshVertex( emitter->mesh, PLVector3( x + particle->scale, y - particle->scale, z + particle->scale ), pl_vecOrigin3, colour, PLVector2( 1.0f, 1.0f ) );
 

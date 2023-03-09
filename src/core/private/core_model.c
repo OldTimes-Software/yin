@@ -99,7 +99,7 @@ static PLGMesh *DeserializeMesh( YNNodeBranch *root )
 		PLColour colour  = ( colours == NULL ) ? ( PLColour ){ 255, 255, 255, 255 } : PlColourF32ToU8( &colours[ i ] );
 		PLVector3 normal = ( normals == NULL ) ? pl_vecOrigin3 : normals[ i ];
 		PLVector2 uv     = ( uvs == NULL ) ? pl_vecOrigin2 : uvs[ i ];
-		PlgAddMeshVertex( mesh, positions[ i ], normal, colour, uv );
+		PlgAddMeshVertex( mesh, &positions[ i ], &normal, &colour, &uv );
 	}
 
 	for ( uint32_t i = 0; i < numIndices; i += 3 )

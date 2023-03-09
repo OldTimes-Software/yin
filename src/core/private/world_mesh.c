@@ -259,11 +259,12 @@ YNCoreWorldMesh *YnCore_WorldMesh_Load( const char *path )
 		// Push all the vertices to the mesh
 		for ( unsigned int i = 0; i < worldMesh->numVertices; ++i )
 		{
+			PLColour colour = PlColourF32ToU8( &worldMesh->vertices[ i ].colour );
 			PlgAddMeshVertex( worldMesh->drawMesh,
-			                  worldMesh->vertices[ i ].position,
-			                  worldMesh->vertices[ i ].normal,
-			                  PlColourF32ToU8( &worldMesh->vertices[ i ].colour ),
-			                  worldMesh->vertices[ i ].uv );
+			                  &worldMesh->vertices[ i ].position,
+			                  &worldMesh->vertices[ i ].normal,
+			                  &colour,
+			                  &worldMesh->vertices[ i ].uv );
 		}
 
 		PLLinkedListNode *faceNode = PlGetFirstNode( worldMesh->faces );

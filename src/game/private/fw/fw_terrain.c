@@ -16,21 +16,22 @@ static unsigned char terrainMinHeight, terrainMaxHeight;
 #	define TERRAIN_NUM_CHUNKS  ( TERRAIN_CHUNK_NUM_X * TERRAIN_CHUNK_NUM_Y )
 #endif
 
-#define TERRAIN_MESH_VERTS_X   32
-#define TERRAIN_MESH_VERTS_Y   32
-#define TERRAIN_MESH_NUM_VERTS ( TERRAIN_MESH_VERTS_X * TERRAIN_MESH_VERTS_Y )
-
 static YNCoreMaterial *terrainMaterial = NULL;
 static PLGMesh *terrainMesh            = NULL;
-static PLGVertex vertices[ TERRAIN_MESH_NUM_VERTS ];
+static PLGVertex vertices[ TERRAIN_HM_SIZE ];
 
 static PLGMesh *GenerateTerrainMesh( void )
 {
+	terrainMesh = PlgCreateMesh( PLG_MESH_POINTS, PLG_DRAW_STATIC, 0, TERRAIN_HM_SIZE );
+
 	// setup the vertex table
-	for ( unsigned int y = 0; y < TERRAIN_MESH_VERTS_Y; ++y )
+	for ( unsigned int y = 0; y < TERRAIN_HM_HEIGHT; ++y )
 	{
-		for ( unsigned int x = 0; x < TERRAIN_MESH_VERTS_X; ++x )
+		for ( unsigned int x = 0; x < TERRAIN_HM_WIDTH; ++x )
 		{
+			PLVector3 position;
+
+			//PlgAddMeshVertex( terrainMesh, )
 		}
 	}
 }

@@ -59,14 +59,14 @@ static void DrawSky( YNCoreWorld *world, YNCoreCamera *camera )
 		if ( skyMesh == NULL )
 			PRINT_ERROR( "Failed to create sky mesh!\nPL: %s\n", PlGetError() );
 
-		PlgAddMeshVertex( skyMesh, PLVector3( 100.0f, 10.0f, 100.0f ), pl_vecOrigin3, PL_COLOUR_WHITE, pl_vecOrigin2 );   /* top right */
-		PlgAddMeshVertex( skyMesh, PLVector3( 200.0f, 10.0f, 200.0f ), pl_vecOrigin3, PLColourA( 0 ), pl_vecOrigin2 );    /* top right far */
-		PlgAddMeshVertex( skyMesh, PLVector3( 100.0f, 10.0f, -100.0f ), pl_vecOrigin3, PL_COLOUR_WHITE, pl_vecOrigin2 );  /* lower right */
-		PlgAddMeshVertex( skyMesh, PLVector3( 200.0f, 10.0f, -200.0f ), pl_vecOrigin3, PLColourA( 0 ), pl_vecOrigin2 );   /* lower right far */
-		PlgAddMeshVertex( skyMesh, PLVector3( -100.0f, 10.0f, -100.0f ), pl_vecOrigin3, PL_COLOUR_WHITE, pl_vecOrigin2 ); /* lower left */
-		PlgAddMeshVertex( skyMesh, PLVector3( -200.0f, 10.0f, -200.0f ), pl_vecOrigin3, PLColourA( 0 ), pl_vecOrigin2 );  /* lower left far */
-		PlgAddMeshVertex( skyMesh, PLVector3( -100.0f, 10.0f, 100.0f ), pl_vecOrigin3, PL_COLOUR_WHITE, pl_vecOrigin2 );  /* top left */
-		PlgAddMeshVertex( skyMesh, PLVector3( -200.0f, 10.0f, 200.0f ), pl_vecOrigin3, PLColourA( 0 ), pl_vecOrigin2 );   /* top left far */
+		PlgAddMeshVertex( skyMesh, &PLVector3( 100.0f, 10.0f, 100.0f ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &pl_vecOrigin2 );   /* top right */
+		PlgAddMeshVertex( skyMesh, &PLVector3( 200.0f, 10.0f, 200.0f ), &pl_vecOrigin3, &PLColourA( 0 ), &pl_vecOrigin2 );    /* top right far */
+		PlgAddMeshVertex( skyMesh, &PLVector3( 100.0f, 10.0f, -100.0f ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &pl_vecOrigin2 );  /* lower right */
+		PlgAddMeshVertex( skyMesh, &PLVector3( 200.0f, 10.0f, -200.0f ), &pl_vecOrigin3, &PLColourA( 0 ), &pl_vecOrigin2 );   /* lower right far */
+		PlgAddMeshVertex( skyMesh, &PLVector3( -100.0f, 10.0f, -100.0f ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &pl_vecOrigin2 ); /* lower left */
+		PlgAddMeshVertex( skyMesh, &PLVector3( -200.0f, 10.0f, -200.0f ), &pl_vecOrigin3, &PLColourA( 0 ), &pl_vecOrigin2 );  /* lower left far */
+		PlgAddMeshVertex( skyMesh, &PLVector3( -100.0f, 10.0f, 100.0f ), &pl_vecOrigin3, &PL_COLOUR_WHITE, &pl_vecOrigin2 );  /* top left */
+		PlgAddMeshVertex( skyMesh, &PLVector3( -200.0f, 10.0f, 200.0f ), &pl_vecOrigin3, &PLColourA( 0 ), &pl_vecOrigin2 );   /* top left far */
 
 		for ( unsigned int i = 0; i < numTriangles; ++i )
 			PlgAddMeshTriangle( skyMesh, indices[ i ][ 0 ], indices[ i ][ 1 ], indices[ i ][ 2 ] );

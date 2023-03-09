@@ -264,10 +264,10 @@ void Act_DrawActors( YNCoreCamera *camera, YNCoreWorldSector *sector )
 				boxColour = PL_COLOUR_RED;
 			}
 
-			PlgDrawBoundingVolume( &actor->visibilityVolume, boxColour );
-			PlgDrawBoundingVolume( &actor->collisionVolume, PL_COLOUR_WHITE );
+			PlgDrawBoundingVolume( &actor->visibilityVolume, &boxColour );
+			PlgDrawBoundingVolume( &actor->collisionVolume, &PL_COLOUR_WHITE );
 
-			PlgDrawBoundingVolume( &PlSetupCollisionAABB( actor->position, PLVector3( -8.0f, -8.0f, -8.0f ), PLVector3( 8.0f, 8.0f, 8.0f ) ), PL_COLOUR_BLUE );
+			PlgDrawBoundingVolume( &PlSetupCollisionAABB( actor->position, PLVector3( -8.0f, -8.0f, -8.0f ), PLVector3( 8.0f, 8.0f, 8.0f ) ), &PL_COLOUR_BLUE );
 
 #	if 1
 			PLLinkedListNode *colliderNode = PlGetFirstNode( actor->geoColliders );
@@ -279,7 +279,7 @@ void Act_DrawActors( YNCoreCamera *camera, YNCoreWorldSector *sector )
 				PLCollision      collision = PlIsSphereIntersectingPlane( &PlSetupCollisionSphere( actor->position, 16.0f ), &plane );
 				if ( collision.penetration > 0.0f )
 				{
-					PlgDrawBoundingVolume( &face->bounds, PL_COLOUR_RED );
+					PlgDrawBoundingVolume( &face->bounds, &PL_COLOUR_RED );
 
 					YnCore_DrawAxesPivot( collision.contactPoint, plane.normal );
 
@@ -289,7 +289,7 @@ void Act_DrawActors( YNCoreCamera *camera, YNCoreWorldSector *sector )
 				}
 				else
 				{
-					PlgDrawBoundingVolume( &face->bounds, PL_COLOUR_GREEN );
+					PlgDrawBoundingVolume( &face->bounds, &PL_COLOUR_GREEN );
 				}
 
 				colliderNode = PlGetNextLinkedListNode( colliderNode );
